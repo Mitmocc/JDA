@@ -36,7 +36,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private Guild guild;
     private Member member;
 
-    private VoiceChannel connectedChannel;
+    private AudioChannel connectedChannel;
     private String sessionId;
     private long requestToSpeak;
     private boolean selfMuted = false;
@@ -180,7 +180,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public VoiceChannel getChannel()
+    public AudioChannel getChannel()
     {
         return connectedChannel;
     }
@@ -206,7 +206,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public boolean inVoiceChannel()
+    public boolean inAudioChannel()
     {
         return getChannel() != null;
     }
@@ -242,7 +242,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     // -- Setters --
 
-    public GuildVoiceStateImpl setConnectedChannel(VoiceChannel connectedChannel)
+    public GuildVoiceStateImpl setConnectedChannel(AudioChannel connectedChannel)
     {
         this.connectedChannel = connectedChannel;
         return this;

@@ -15,16 +15,16 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
@@ -36,7 +36,6 @@ public class GuildMemberRemoveHandler extends SocketHandler
         super(api);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected Long handleInternally(DataObject content)
     {
@@ -93,11 +92,12 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
 
         GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
-        if (voiceState != null && voiceState.inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
+        if (voiceState != null && voiceState.inAudioChannel())//If this user was in an AudioChannel, fire VoiceLeaveEvent.
         {
-            VoiceChannel channel = voiceState.getChannel();
+            AudioChannel channel = voiceState.getChannel();
             voiceState.setConnectedChannel(null);
-            ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(userId);
+            ((AudioChannelMixin<?>) channel).getConnectedMembersMap().remove(userId);
+
             getJDA().handleEvent(
                 new GuildVoiceLeaveEvent(
                     getJDA(), responseNumber,
@@ -116,11 +116,6 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 getJDA().getEventCache().clear(EventCache.Type.USER, userId);
             }
         }
-        // Cache dependent event
-        getJDA().handleEvent(
-            new GuildMemberLeaveEvent(
-                getJDA(), responseNumber,
-                member));
         // Cache independent event
         getJDA().handleEvent(
             new GuildMemberRemoveEvent(

@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.requests;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -157,6 +156,14 @@ public class Route
         public static final Route ADD_MEMBER_ROLE =    new Route(PUT,    "guilds/{guild_id}/members/{user_id}/roles/{role_id}");
         public static final Route REMOVE_MEMBER_ROLE = new Route(DELETE, "guilds/{guild_id}/members/{user_id}/roles/{role_id}");
 
+        public static final Route LIST_ACTIVE_THREADS = new Route(GET,   "guilds/{guild_id}/threads/active");
+
+        public static final Route GET_SCHEDULED_EVENT       = new Route(GET,    "guilds/{guild_id}/scheduled-events/{scheduled_event_id}");
+        public static final Route GET_SCHEDULED_EVENTS      = new Route(GET,    "guilds/{guild_id}/scheduled-events");
+        public static final Route CREATE_SCHEDULED_EVENT    = new Route(POST,   "guilds/{guild_id}/scheduled-events");
+        public static final Route MODIFY_SCHEDULED_EVENT    = new Route(PATCH,  "guilds/{guild_id}/scheduled-events/{scheduled_event_id}");
+        public static final Route DELETE_SCHEDULED_EVENT    = new Route(DELETE, "guilds/{guild_id}/scheduled-events/{scheduled_event_id}");
+        public static final Route GET_SCHEDULED_EVENT_USERS = new Route(GET,    "guilds/{guild_id}/scheduled-events/{scheduled_event_id}/users");
 
         //Client Only
         public static final Route CREATE_GUILD = new Route(POST, "guilds");
@@ -217,6 +224,18 @@ public class Route
         public static final Route GET_PERMISSIONS =      new Route(GET,    "channels/{channel_id}/permissions");
         public static final Route GET_PERM_OVERRIDE =    new Route(GET,    "channels/{channel_id}/permissions/{permoverride_id}");
         public static final Route FOLLOW_CHANNEL =       new Route(POST,   "channels/{channel_id}/followers");
+
+        public static final Route CREATE_THREAD_WITH_MESSAGE =              new Route(POST,     "channels/{channel_id}/messages/{message_id}/threads");
+        public static final Route CREATE_THREAD_WITHOUT_MESSAGE =           new Route(POST,     "channels/{channel_id}/threads");
+        public static final Route JOIN_THREAD =                             new Route(PUT,      "channels/{channel_id}/thread-members/@me");
+        public static final Route ADD_THREAD_MEMBER =                       new Route(PUT,      "channels/{channel_id}/thread-members/{user_id}");
+        public static final Route LEAVE_THREAD =                            new Route(DELETE,   "channels/{channel_id}/thread-members/@me");
+        public static final Route REMOVE_THREAD_MEMBER =                    new Route(DELETE,   "channels/{channel_id}/thread-members/{user_id}");
+        public static final Route GET_THREAD_MEMBER =                       new Route(GET,      "channels/{channel_id}/thread-members/{user_id}");
+        public static final Route LIST_THREAD_MEMBERS =                     new Route(GET,      "channels/{channel_id}/thread-members");
+        public static final Route LIST_PUBLIC_ARCHIVED_THREADS =            new Route(GET,      "channels/{channel_id}/threads/archived/public");
+        public static final Route LIST_PRIVATE_ARCHIVED_THREADS =           new Route(GET,      "channels/{channel_id}/threads/archived/private");
+        public static final Route LIST_JOINED_PRIVATE_ARCHIVED_THREADS =    new Route(GET,      "channels/{channel_id}/users/@me/threads/archived/private");
 
         // Client Only
         public static final Route GET_RECIPIENTS =   new Route(GET,    "channels/{channel_id}/recipients");
@@ -407,7 +426,7 @@ public class Route
         private final Route baseRoute;
         private final String major;
         private final String compiledRoute;
-        private final boolean hasQueryParams; 
+        private final boolean hasQueryParams;
 
         private CompiledRoute(Route baseRoute, String compiledRoute, String major, boolean hasQueryParams)
         {

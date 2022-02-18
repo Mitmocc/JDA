@@ -188,14 +188,14 @@ public interface IPermissionHolder extends ISnowflake
      * @param  targetChannel
      *         The target channel to check
      * @param  syncSource
-     *         The sync source, for example the parent category (see {@link GuildChannel#getParent()})
+     *         The sync source, for example the parent category (see {@link ICategorizableChannel#getParentCategory()})
      *
      * @throws IllegalArgumentException
      *         If either of the channels is null or not from the same guild as this permission holder
      *
      * @return True, if the channels can be synced
      */
-    boolean canSync(@Nonnull GuildChannel targetChannel, @Nonnull GuildChannel syncSource);
+    boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource);
 
     /**
      * Whether the permissions of this PermissionHolder are good enough to sync the target channel with any other channel.
@@ -211,5 +211,5 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if the channel can be synced
      */
-    boolean canSync(@Nonnull GuildChannel channel);
+    boolean canSync(@Nonnull IPermissionContainer channel);
 }

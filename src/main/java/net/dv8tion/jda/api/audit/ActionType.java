@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.audit;
 
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 
 /**
@@ -48,7 +49,7 @@ public enum ActionType
 
 
     /**
-     * An Administrator created a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     * An Administrator created a {@link GuildChannel GuildChannel}
      *
      * <h2>Possible Keys</h2>
      * <ul>
@@ -66,7 +67,7 @@ public enum ActionType
     CHANNEL_CREATE(10, TargetType.CHANNEL),
 
     /**
-     * An Administrator updated {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} information.
+     * An Administrator updated {@link GuildChannel GuildChannel} information.
      *
      * <h2>Possible Keys</h2>
      * <ul>
@@ -82,7 +83,7 @@ public enum ActionType
     CHANNEL_UPDATE(11, TargetType.CHANNEL),
 
     /**
-     * An Administrator deleted a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+     * An Administrator deleted a {@link GuildChannel GuildChannel}.
      *
      * <h2>Possible Keys</h2>
      * <ul>
@@ -493,6 +494,43 @@ public enum ActionType
      * </ul>
      */
     STAGE_INSTANCE_DELETE(85, TargetType.STAGE_INSTANCE),
+
+    /**
+     * A user created a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
+     *
+     * <h2>Possible Keys</h2>
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_NAME THREAD_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_SLOWMODE THREAD_SLOWMODE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_ARCHIVED THREAD_ARCHIVED}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_AUTO_ARCHIVE_DURATION THREAD_AUTO_ARCHIVE_DURATION}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_LOCKED THREAD_LOCKED}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_INVITABLE THREAD_INVITABLE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ID ID}</li>
+     * </ul>
+     */
+    THREAD_CREATE(110, TargetType.THREAD),
+
+    /**
+     * A user updated a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
+     *
+     * <h2>Possible Keys</h2>
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_NAME THREAD_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_SLOWMODE THREAD_SLOWMODE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_ARCHIVED THREAD_ARCHIVED}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_AUTO_ARCHIVE_DURATION THREAD_AUTO_ARCHIVE_DURATION}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_LOCKED THREAD_LOCKED}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_INVITABLE THREAD_INVITABLE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ID ID}</li>
+     * </ul>
+     */
+    THREAD_UPDATE(111, TargetType.THREAD),
+
+    /**
+     * A user deleted a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
+     */
+    THREAD_DELETE(112, TargetType.THREAD),
 
     UNKNOWN(-1, TargetType.UNKNOWN);
 

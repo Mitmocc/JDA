@@ -18,24 +18,23 @@ package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
-import net.dv8tion.jda.api.events.channel.text.update.*;
-import net.dv8tion.jda.api.events.channel.voice.update.*;
+import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
+import net.dv8tion.jda.api.events.thread.ThreadHiddenEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,9 +50,7 @@ public class ChannelUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        int rawType = content.getInt("type");
-        boolean news = rawType == 5;
-        ChannelType type = ChannelType.fromId(rawType);
+        final ChannelType type = ChannelType.fromId(content.getInt("type"));
         if (type == ChannelType.GROUP)
         {
             WebSocketClient.LOG.warn("Ignoring CHANNEL_UPDATE for a group which we don't support");
@@ -61,23 +58,31 @@ public class ChannelUpdateHandler extends SocketHandler
         }
 
         final long channelId = content.getLong("id");
-        final Long parentId = content.isNull("parent_id") ? null : content.getLong("parent_id");
+        final long parentId = content.isNull("parent_id") ? 0 : content.getLong("parent_id");
         final int position = content.getInt("position");
         final String name = content.getString("name");
         final boolean nsfw = content.getBoolean("nsfw");
         final int slowmode = content.getInt("rate_limit_per_user", 0);
-        DataArray permOverwrites = content.getArray("permission_overwrites");
+        final DataArray permOverwrites = content.getArray("permission_overwrites");
+
+        //We assume the CHANNEL_UPDATE was for a GuildChannel because PrivateChannels don't emit CHANNEL_UPDATE for 1:1 DMs, only Groups.
+        GuildChannel channel = getJDA().getGuildChannelById(channelId);
+        if (channel == null)
+        {
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a channel that does not exist. JSON: {}", content);
+            return null;
+        }
+
+        //Detect if we changed the channel type at all and reconstruct the channel entity if needed
+        channel = handleChannelTypeChange(channel, content, type);
+
         switch (type)
         {
             case STORE:
             {
-                StoreChannelImpl storeChannel = (StoreChannelImpl) getJDA().getStoreChannelById(channelId);
-                if (storeChannel == null)
-                {
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a StoreChannel that does not exist. JSON: {}", content);
-                    return null;
-                }
+                StoreChannelImpl storeChannel = (StoreChannelImpl) channel;
+
                 final String oldName = storeChannel.getName();
                 final int oldPosition = storeChannel.getPositionRaw();
 
@@ -85,36 +90,29 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     storeChannel.setName(name);
                     getJDA().handleEvent(
-                        new StoreChannelUpdateNameEvent(
+                        new ChannelUpdateNameEvent(
                             getJDA(), responseNumber,
-                            storeChannel, oldName));
+                            storeChannel, oldName, name
+                        ));
                 }
                 if (!Objects.equals(oldPosition, position))
                 {
                     storeChannel.setPosition(position);
                     getJDA().handleEvent(
-                        new StoreChannelUpdatePositionEvent(
+                        new ChannelUpdatePositionEvent(
                             getJDA(), responseNumber,
-                            storeChannel, oldPosition));
+                            storeChannel, oldPosition, position));
                 }
-
-                applyPermissions(storeChannel, permOverwrites);
                 break;
             }
             case TEXT:
             {
-                String topic = content.getString("topic", null);
-                TextChannelImpl textChannel = (TextChannelImpl) getJDA().getTextChannelsView().get(channelId);
-                if (textChannel == null)
-                {
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a TextChannel that does not exist. JSON: {}", content);
-                    return null;
-                }
+                final String topic = content.getString("topic", null);
+
+                TextChannelImpl textChannel = (TextChannelImpl) channel;
 
                 //If any properties changed, update the values and fire the proper events.
-                final Category parent = textChannel.getParent();
-                final Long oldParent = parent == null ? null : parent.getIdLong();
+                final long oldParentId = textChannel.getParentCategoryIdLong();
                 final String oldName = textChannel.getName();
                 final String oldTopic = textChannel.getTopic();
                 final int oldPosition = textChannel.getPositionRaw();
@@ -124,83 +122,123 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     textChannel.setName(name);
                     getJDA().handleEvent(
-                            new TextChannelUpdateNameEvent(
+                            new ChannelUpdateNameEvent(
                                     getJDA(), responseNumber,
-                                    textChannel, oldName));
+                                    textChannel, oldName, name));
                 }
-                if (!Objects.equals(oldParent, parentId))
+                if (oldParentId != parentId)
                 {
-                    textChannel.setParent(parentId == null ? 0 : parentId);
+                    final Category oldParent = textChannel.getParentCategory();
+                    textChannel.setParentCategory(parentId);
                     getJDA().handleEvent(
-                           new TextChannelUpdateParentEvent(
+                           new ChannelUpdateParentEvent(
                                getJDA(), responseNumber,
-                               textChannel, parent));
+                               textChannel, oldParent, textChannel.getParentCategory()));
                 }
                 if (!Objects.equals(oldTopic, topic))
                 {
                     textChannel.setTopic(topic);
                     getJDA().handleEvent(
-                            new TextChannelUpdateTopicEvent(
+                            new ChannelUpdateTopicEvent(
                                     getJDA(), responseNumber,
-                                    textChannel, oldTopic));
+                                    textChannel, oldTopic, topic));
                 }
                 if (oldPosition != position)
                 {
                     textChannel.setPosition(position);
                     getJDA().handleEvent(
-                            new TextChannelUpdatePositionEvent(
+                            new ChannelUpdatePositionEvent(
                                     getJDA(), responseNumber,
-                                    textChannel, oldPosition));
+                                    textChannel, oldPosition, position));
                 }
 
                 if (oldNsfw != nsfw)
                 {
                     textChannel.setNSFW(nsfw);
                     getJDA().handleEvent(
-                            new TextChannelUpdateNSFWEvent(
+                            new ChannelUpdateNSFWEvent(
                                     getJDA(), responseNumber,
-                                    textChannel, oldNsfw));
+                                    textChannel, oldNsfw, nsfw));
                 }
 
                 if (oldSlowmode != slowmode)
                 {
                     textChannel.setSlowmode(slowmode);
                     getJDA().handleEvent(
-                            new TextChannelUpdateSlowmodeEvent(
+                            new ChannelUpdateSlowmodeEvent(
                                     getJDA(), responseNumber,
-                                    textChannel, oldSlowmode));
+                                    textChannel, oldSlowmode, slowmode));
                 }
-
-                if (news != textChannel.isNews())
-                {
-                    textChannel.setNews(news);
-                    getJDA().handleEvent(
-                        new TextChannelUpdateNewsEvent(
-                            getJDA(), responseNumber,
-                            textChannel));
-                }
-
-                applyPermissions(textChannel, permOverwrites);
-                break;  //Finish the TextChannelUpdate case
+                break;
             }
-            case STAGE:
+            case NEWS:
+            {
+                final String topic = content.getString("topic", null);
+
+                NewsChannelImpl newsChannel = (NewsChannelImpl) channel;
+
+                //If any properties changed, update the values and fire the proper events.
+                final long oldParentId = newsChannel.getParentCategoryIdLong();
+                final String oldName = newsChannel.getName();
+                final String oldTopic = newsChannel.getTopic();
+                final int oldPosition = newsChannel.getPositionRaw();
+                final boolean oldNsfw = newsChannel.isNSFW();
+                if (!Objects.equals(oldName, name))
+                {
+                    newsChannel.setName(name);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNameEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldName, name));
+                }
+                if (oldParentId != parentId)
+                {
+                    final Category oldParent = newsChannel.getParentCategory();
+                    newsChannel.setParentCategory(parentId);
+                    getJDA().handleEvent(
+                            new ChannelUpdateParentEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldParent, newsChannel.getParentCategory()));
+                }
+                if (!Objects.equals(oldTopic, topic))
+                {
+                    newsChannel.setTopic(topic);
+                    getJDA().handleEvent(
+                            new ChannelUpdateTopicEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldTopic, topic));
+                }
+                if (oldPosition != position)
+                {
+                    newsChannel.setPosition(position);
+                    getJDA().handleEvent(
+                            new ChannelUpdatePositionEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldPosition, position));
+                }
+
+                if (oldNsfw != nsfw)
+                {
+                    newsChannel.setNSFW(nsfw);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNSFWEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldNsfw, nsfw));
+                }
+                break;
+            }
             case VOICE:
             {
-                VoiceChannelImpl voiceChannel = (VoiceChannelImpl) getJDA().getVoiceChannelsView().get(channelId);
-                int userLimit = content.getInt("user_limit");
-                int bitrate = content.getInt("bitrate");
-                final String region = content.getString("rtc_region", null);
-                if (voiceChannel == null)
-                {
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a VoiceChannel that does not exist. JSON: {}", content);
-                    return null;
-                }
+                final int userLimit = content.getInt("user_limit");
+                final int bitrate = content.getInt("bitrate");
+                final String regionRaw = content.getString("rtc_region", null);
+
+                VoiceChannelImpl voiceChannel = (VoiceChannelImpl) channel;
+
                 //If any properties changed, update the values and fire the proper events.
-                final Category parent = voiceChannel.getParent();
-                final Long oldParent = parent == null ? null : parent.getIdLong();
+                final long oldParentId = voiceChannel.getParentCategoryIdLong();
                 final String oldName = voiceChannel.getName();
-                final String oldRegion = voiceChannel.getRegionRaw();
+                final String oldRegionRaw = voiceChannel.getRegionRaw();
                 final int oldPosition = voiceChannel.getPositionRaw();
                 final int oldLimit = voiceChannel.getUserLimit();
                 final int oldBitrate = voiceChannel.getBitrate();
@@ -208,63 +246,117 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     voiceChannel.setName(name);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdateNameEvent(
+                            new ChannelUpdateNameEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, oldName));
+                                    voiceChannel, oldName, name));
                 }
-                if (!Objects.equals(oldRegion, region))
+                if (!Objects.equals(oldRegionRaw, regionRaw))
                 {
-                    voiceChannel.setRegion(region);
+                    final Region oldRegion = Region.fromKey(oldRegionRaw);
+                    voiceChannel.setRegion(regionRaw);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdateRegionEvent(
+                            new ChannelUpdateRegionEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, oldRegion));
+                                    voiceChannel, oldRegion, voiceChannel.getRegion()));
                 }
-                if (!Objects.equals(oldParent, parentId))
+                if (oldParentId != parentId)
                 {
-                    voiceChannel.setParent(parentId == null ? 0 : parentId);
+                    final Category oldParent = voiceChannel.getParentCategory();
+                    voiceChannel.setParentCategory(parentId);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdateParentEvent(
+                            new ChannelUpdateParentEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, parent));
+                                    voiceChannel, oldParent, voiceChannel.getParentCategory()));
                 }
                 if (oldPosition != position)
                 {
                     voiceChannel.setPosition(position);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdatePositionEvent(
+                            new ChannelUpdatePositionEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, oldPosition));
+                                    voiceChannel, oldPosition, position));
                 }
                 if (oldLimit != userLimit)
                 {
                     voiceChannel.setUserLimit(userLimit);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdateUserLimitEvent(
+                            new ChannelUpdateUserLimitEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, oldLimit));
+                                    voiceChannel, oldLimit, userLimit));
                 }
                 if (oldBitrate != bitrate)
                 {
                     voiceChannel.setBitrate(bitrate);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdateBitrateEvent(
+                            new ChannelUpdateBitrateEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, oldBitrate));
+                                    voiceChannel, oldBitrate, bitrate));
                 }
 
-                applyPermissions(voiceChannel, permOverwrites);
-                break;  //Finish the VoiceChannelUpdate case
+                break;
+            }
+            case STAGE:
+            {
+                final int bitrate = content.getInt("bitrate");
+                final String regionRaw = content.getString("rtc_region", null);
+
+                StageChannelImpl stageChannel = (StageChannelImpl) channel;
+
+                //If any properties changed, update the values and fire the proper events.
+                final long oldParentId = stageChannel.getParentCategoryIdLong();
+                final String oldName = stageChannel.getName();
+                final String oldRegionRaw = stageChannel.getRegionRaw();
+                final int oldPosition = stageChannel.getPositionRaw();
+                final int oldBitrate = stageChannel.getBitrate();
+                if (!Objects.equals(oldName, name))
+                {
+                    stageChannel.setName(name);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNameEvent(
+                                    getJDA(), responseNumber,
+                                    stageChannel, oldName, name));
+                }
+                if (!Objects.equals(oldRegionRaw, regionRaw))
+                {
+                    final Region oldRegion = Region.fromKey(oldRegionRaw);
+                    stageChannel.setRegion(regionRaw);
+                    getJDA().handleEvent(
+                            new ChannelUpdateRegionEvent(
+                                    getJDA(), responseNumber,
+                                    stageChannel, oldRegion, stageChannel.getRegion()));
+                }
+                if (oldParentId != parentId)
+                {
+                    final Category oldParent = stageChannel.getParentCategory();
+                    stageChannel.setParentCategory(parentId);
+                    getJDA().handleEvent(
+                            new ChannelUpdateParentEvent(
+                                    getJDA(), responseNumber,
+                                    stageChannel, oldParent, stageChannel.getParentCategory()));
+                }
+                if (oldPosition != position)
+                {
+                    stageChannel.setPosition(position);
+                    getJDA().handleEvent(
+                            new ChannelUpdatePositionEvent(
+                                    getJDA(), responseNumber,
+                                    stageChannel, oldPosition, position));
+                }
+                if (oldBitrate != bitrate)
+                {
+                    stageChannel.setBitrate(bitrate);
+                    getJDA().handleEvent(
+                            new ChannelUpdateBitrateEvent(
+                                    getJDA(), responseNumber,
+                                    stageChannel, oldBitrate, bitrate));
+                }
+
+                break;
             }
             case CATEGORY:
             {
-                CategoryImpl category = (CategoryImpl) getJDA().getCategoryById(channelId);
-                if (category == null)
-                {
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a Category that does not exist. JSON: {}", content);
-                    return null;
-                }
+                CategoryImpl category = (CategoryImpl) channel;
+
                 final String oldName = category.getName();
                 final int oldPosition = category.getPositionRaw();
 
@@ -272,32 +364,91 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     category.setName(name);
                     getJDA().handleEvent(
-                            new CategoryUpdateNameEvent(
+                            new ChannelUpdateNameEvent(
                                 getJDA(), responseNumber,
-                                category, oldName));
+                                category, oldName, name));
                 }
                 if (!Objects.equals(oldPosition, position))
                 {
                     category.setPosition(position);
                     getJDA().handleEvent(
-                            new CategoryUpdatePositionEvent(
+                            new ChannelUpdatePositionEvent(
                                 getJDA(), responseNumber,
-                                category, oldPosition));
+                                category, oldPosition, position));
                 }
 
-                applyPermissions(category, permOverwrites);
-                break;  //Finish the CategoryUpdate case
+                break;
             }
             default:
                 WebSocketClient.LOG.debug("CHANNEL_UPDATE provided an unrecognized channel type JSON: {}", content);
         }
+
+        applyPermissions((IPermissionContainerMixin<?>) channel, permOverwrites);
+
+        boolean hasAccessToChannel = channel.getGuild().getSelfMember().hasPermission((IPermissionContainer) channel, Permission.VIEW_CHANNEL);
+        if (channel.getType().isMessage() && !hasAccessToChannel)
+        {
+            handleHideChildThreads((IThreadContainer) channel);
+        }
+
         return null;
     }
 
-    @SuppressWarnings("deprecation")
-    private void applyPermissions(AbstractChannelImpl<?,?> channel, DataArray permOverwrites)
+    private GuildChannel handleChannelTypeChange(GuildChannel channel, DataObject content, ChannelType newChannelType)
     {
-        TLongObjectMap<PermissionOverride> currentOverrides = new TLongObjectHashMap<>(channel.getOverrideMap());
+        if (channel.getType() == newChannelType) {
+            return channel;
+        }
+
+        EntityBuilder builder = getJDA().getEntityBuilder();
+        GuildImpl guild = (GuildImpl) channel.getGuild();
+
+        if (newChannelType == ChannelType.TEXT)
+        {
+            //This assumes that if we're moving to a TextChannel that we're transitioning from a NewsChannel
+            NewsChannel newsChannel = (NewsChannel) channel;
+            getJDA().getNewsChannelView().remove(newsChannel.getIdLong());
+            guild.getNewsChannelView().remove(newsChannel.getIdLong());
+
+            TextChannelImpl textChannel = (TextChannelImpl) builder.createTextChannel(guild, content, guild.getIdLong());
+
+            //CHANNEL_UPDATE doesn't track last_message_id, so make sure to copy it over.
+            textChannel.setLatestMessageIdLong(newsChannel.getLatestMessageIdLong());
+
+            getJDA().handleEvent(
+                new ChannelUpdateTypeEvent(
+                    getJDA(), responseNumber,
+                    textChannel, ChannelType.NEWS, ChannelType.TEXT));
+
+            return textChannel;
+        }
+
+        if (newChannelType == ChannelType.NEWS)
+        {
+            //This assumes that if we're moving to a NewsChannel that we're transitioning from a TextChannel
+            TextChannel textChannel = (TextChannel) channel;
+            getJDA().getTextChannelsView().remove(textChannel.getIdLong());
+            guild.getTextChannelsView().remove(textChannel.getIdLong());
+
+            NewsChannelImpl newsChannel = (NewsChannelImpl) builder.createNewsChannel(guild, content, guild.getIdLong());
+
+            //CHANNEL_UPDATE doesn't track last_message_id, so make sure to copy it over.
+            newsChannel.setLatestMessageIdLong(textChannel.getLatestMessageIdLong());
+
+            getJDA().handleEvent(
+                new ChannelUpdateTypeEvent(
+                    getJDA(), responseNumber,
+                    newsChannel, ChannelType.TEXT, ChannelType.NEWS));
+
+            return newsChannel;
+        }
+
+        return channel;
+    }
+
+    private void applyPermissions(IPermissionContainerMixin<?> channel, DataArray permOverwrites)
+    {
+        TLongObjectMap<PermissionOverride> currentOverrides = new TLongObjectHashMap<>(channel.getPermissionOverrideMap());
         List<IPermissionHolder> changed = new ArrayList<>(currentOverrides.size());
         Guild guild = channel.getGuild();
         for (int i = 0; i < permOverwrites.length(); i++)
@@ -309,7 +460,7 @@ public class ChannelUpdateHandler extends SocketHandler
         }
 
         currentOverrides.forEachValue(override -> {
-            channel.getOverrideMap().remove(override.getIdLong());
+            channel.getPermissionOverrideMap().remove(override.getIdLong());
             addPermissionHolder(changed, guild, override.getIdLong());
             api.handleEvent(
                 new PermissionOverrideDeleteEvent(
@@ -317,37 +468,6 @@ public class ChannelUpdateHandler extends SocketHandler
                     channel, override));
             return true;
         });
-
-        if (changed.isEmpty())
-            return;
-        switch (channel.getType())
-        {
-        case CATEGORY:
-            api.handleEvent(
-                new CategoryUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (Category) channel, changed));
-            break;
-        case STORE:
-            api.handleEvent(
-                new StoreChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (StoreChannel) channel, changed));
-            break;
-        case STAGE:
-        case VOICE:
-            api.handleEvent(
-                new VoiceChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (VoiceChannel) channel, changed));
-            break;
-        case TEXT:
-            api.handleEvent(
-                new TextChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (TextChannel) channel, changed));
-            break;
-        }
     }
 
     private void addPermissionHolder(List<IPermissionHolder> changed, Guild guild, long id)
@@ -361,7 +481,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
     // True => override status changed (created/deleted/updated)
     // False => nothing changed, ignore
-    private boolean handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long overrideId, AbstractChannelImpl<?,?> channel)
+    private boolean handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long overrideId, IPermissionContainerMixin<?> channel)
     {
         final long allow = override.getLong("allow");
         final long deny = override.getLong("deny");
@@ -391,7 +511,7 @@ public class ChannelUpdateHandler extends SocketHandler
             if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L)
             {
                 // We delete empty overrides for the @everyone role because that's what the client also does, otherwise our sync checks don't work!
-                channel.getOverrideMap().remove(overrideId);
+                channel.getPermissionOverrideMap().remove(overrideId);
                 api.handleEvent(
                     new PermissionOverrideDeleteEvent(
                         api, responseNumber,
@@ -415,7 +535,7 @@ public class ChannelUpdateHandler extends SocketHandler
             currentOverride = impl = new PermissionOverrideImpl(channel, overrideId, isRole);
             impl.setAllow(allow);
             impl.setDeny(deny);
-            channel.getOverrideMap().put(overrideId, currentOverride);
+            channel.getPermissionOverrideMap().put(overrideId, currentOverride);
             api.handleEvent(
                 new PermissionOverrideCreateEvent(
                     api, responseNumber,
@@ -423,5 +543,35 @@ public class ChannelUpdateHandler extends SocketHandler
         }
 
         return true;
+    }
+
+    private void handleHideChildThreads(IThreadContainer channel)
+    {
+        List<ThreadChannel> threads = channel.getThreadChannels();
+        if (threads.isEmpty())
+            return;
+
+        for (ThreadChannel thread : threads)
+        {
+            GuildImpl guild = (GuildImpl) channel.getGuild();
+            SnowflakeCacheViewImpl<ThreadChannel>
+                    guildThreadView = guild.getThreadChannelsView(),
+                    threadView = getJDA().getThreadChannelsView();
+            try (
+                    UnlockHook vlock = guildThreadView.writeLock();
+                    UnlockHook jlock = threadView.writeLock())
+            {
+                //TODO-threads: When we figure out how member chunking is going to work for thread related members
+                // we may need to revisit this to ensure they kicked out of the cache if needed.
+                threadView.getMap().remove(thread.getIdLong());
+                guildThreadView.getMap().remove(thread.getIdLong());
+            }
+        }
+
+        //Fire these events outside the write locks
+        for (ThreadChannel thread : threads)
+        {
+            api.handleEvent(new ThreadHiddenEvent(api, responseNumber, thread));
+        }
     }
 }

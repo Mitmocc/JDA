@@ -16,13 +16,10 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -63,28 +60,6 @@ public interface GuildAction extends RestAction<Void>
     @Nonnull
     @Override
     GuildAction deadline(long timestamp);
-
-    /**
-     * Sets the voice {@link net.dv8tion.jda.api.Region Region} of
-     * the resulting {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * @param  region
-     *         The {@link net.dv8tion.jda.api.Region Region} to use
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided region is a VIP region as per {@link net.dv8tion.jda.api.Region#isVip() Region.isVip()}
-     *
-     * @return The current GuildAction for chaining convenience
-     * 
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link net.dv8tion.jda.api.managers.ChannelManager#setRegion(Region)} instead.
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("ChannelManager.setRegion()")
-    @DeprecatedSince("4.3.0")
-    GuildAction setRegion(@Nullable Region region);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon}
@@ -154,7 +129,7 @@ public interface GuildAction extends RestAction<Void>
     GuildAction setExplicitContentLevel(@Nullable Guild.ExplicitContentLevel level);
 
     /**
-     * Adds a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} to the resulting
+     * Adds a {@link GuildChannel GuildChannel} to the resulting
      * Guild. This cannot be of type {@link net.dv8tion.jda.api.entities.ChannelType#CATEGORY CATEGORY}!
      *
      * @param  channel
@@ -506,7 +481,7 @@ public interface GuildAction extends RestAction<Void>
     }
 
     /**
-     * GuildChannel information used for the creation of {@link net.dv8tion.jda.api.entities.GuildChannel Channels} within
+     * GuildChannel information used for the creation of {@link GuildChannel Channels} within
      * the construction of a {@link net.dv8tion.jda.api.entities.Guild Guild} via GuildAction.
      *
      * <p>Use with {@link #addChannel(ChannelData) GuildAction.addChannel(ChannelData)}.
@@ -528,7 +503,7 @@ public interface GuildAction extends RestAction<Void>
 
         /**
          * Constructs a data object containing information on
-         * a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} to be used in the construction
+         * a {@link GuildChannel GuildChannel} to be used in the construction
          * of a {@link net.dv8tion.jda.api.entities.Guild Guild}!
          *
          * @param  type

@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.api.sharding;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -798,7 +795,7 @@ public interface ShardManager
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -826,7 +823,7 @@ public interface ShardManager
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -857,7 +854,7 @@ public interface ShardManager
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -890,7 +887,7 @@ public interface ShardManager
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -1022,7 +1019,7 @@ public interface ShardManager
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
      * client, it is you will not see the channel that this returns. This is because the discord client
      * hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
@@ -1044,7 +1041,7 @@ public interface ShardManager
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
      * client, it is you will not see the channel that this returns. This is because the discord client
      * hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
@@ -1077,7 +1074,7 @@ public interface ShardManager
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
      * client, it is possible that you will see fewer channels than this returns. This is because the discord client
      * hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
@@ -1301,32 +1298,6 @@ public interface ShardManager
      *         If {@link #shutdown()} has already been invoked
      */
     void restart(int id);
-
-    /**
-     * Sets the {@link net.dv8tion.jda.api.entities.Activity Activity} for all shards.
-     * <br>A Activity can be retrieved via {@link net.dv8tion.jda.api.entities.Activity#playing(String)}.
-     * For streams you provide a valid streaming url as second parameter.
-     *
-     * <p>This will also change the game for shards that are created in the future.
-     *
-     * @param  game
-     *         A {@link net.dv8tion.jda.api.entities.Activity Activity} instance or null to reset
-     *
-     * @see    net.dv8tion.jda.api.entities.Activity#playing(String)
-     * @see    net.dv8tion.jda.api.entities.Activity#streaming(String, String)
-     *
-     * @deprecated
-     *         Use {@link #setActivity(net.dv8tion.jda.api.entities.Activity)} instead
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @DeprecatedSince("4.0.0")
-    @ReplaceWith("setActivity()")
-    default void setGame(@Nullable final Activity game)
-    {
-        this.setActivityProvider(id -> game);
-    }
-
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Activity Activity} for all shards.

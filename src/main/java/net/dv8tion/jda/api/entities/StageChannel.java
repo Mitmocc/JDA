@@ -17,20 +17,24 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
+import net.dv8tion.jda.internal.requests.restaction.StageInstanceActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 
 /**
  * Represents a Stage Channel.
  *
- * <p>This is a more advanced version of a {@link VoiceChannel}
- * that can be used to host events with speakers and listeners.
+ * <p>This is a specialized AudioChannel that can be used to host events with speakers and listeners.
  */
-public interface StageChannel extends VoiceChannel
+public interface StageChannel extends GuildChannel, AudioChannel, ICategorizableChannel, ICopyableChannel, IPositionableChannel, IPermissionContainer, IMemberContainer, IInviteContainer
 {
     /**
      * {@link StageInstance} attached to this stage channel.
@@ -65,7 +69,18 @@ public interface StageChannel extends VoiceChannel
      */
     @Nonnull
     @CheckReturnValue
-    StageInstanceAction createStageInstance(@Nonnull String topic);
+    default StageInstanceAction createStageInstance(@Nonnull String topic)
+    {
+        EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(this);
+        EnumSet<Permission> required = EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
+        for (Permission perm : required)
+        {
+            if (!permissions.contains(perm))
+                throw new InsufficientPermissionException(this, perm, "You must be a stage moderator to create a stage instance! Missing Permission: " + perm);
+        }
+
+        return new StageInstanceActionImpl(this).setTopic(topic);
+    }
 
     /**
      * Whether this member is considered a moderator for this stage channel.
@@ -93,4 +108,19 @@ public interface StageChannel extends VoiceChannel
         Checks.notNull(member, "Member");
         return member.hasPermission(this, Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
     }
+
+    @Nonnull
+    @Override
+    ChannelAction<StageChannel> createCopy(@Nonnull Guild guild);
+
+    @Nonnull
+    @Override
+    default ChannelAction<StageChannel> createCopy()
+    {
+        return createCopy(getGuild());
+    }
+
+    @Nonnull
+    @Override
+    StageChannelManager getManager();
 }

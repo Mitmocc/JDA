@@ -17,9 +17,9 @@
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -209,11 +209,11 @@ public interface VoiceDispatchInterceptor
      */
     class VoiceStateUpdate implements VoiceUpdate
     {
-        private final VoiceChannel channel;
+        private final AudioChannel channel;
         private final GuildVoiceState voiceState;
         private final DataObject json;
 
-        public VoiceStateUpdate(VoiceChannel channel, GuildVoiceState voiceState, DataObject json)
+        public VoiceStateUpdate(AudioChannel channel, GuildVoiceState voiceState, DataObject json)
         {
             this.channel = channel;
             this.voiceState = voiceState;
@@ -240,7 +240,7 @@ public interface VoiceDispatchInterceptor
          * @return The updated voice channel, or null to signal disconnect
          */
         @Nullable
-        public VoiceChannel getChannel()
+        public AudioChannel getChannel()
         {
             return channel;
         }

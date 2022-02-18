@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.EmoteManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -78,24 +76,6 @@ public interface Emote extends IMentionable
      */
     @Nonnull
     List<Role> getRoles();
-
-    /**
-     * Whether this Emote has attached roles. This might not be the case when the emote
-     * is retrieved through special cases like audit-logs.
-     *
-     * <p>If this is not true then {@link #getRoles()} will throw {@link IllegalStateException}.
-     *
-     * @return True, if this emote has roles attached
-     *
-     * @deprecated This will be replaced by {@link #canProvideRoles()}
-     */
-    @Deprecated
-    @DeprecatedSince("3.8.0")
-    @ReplaceWith("canProvideRoles()")
-    default boolean hasRoles()
-    {
-        return canProvideRoles();
-    }
 
     /**
      * Whether this Emote has an attached roles list. This might not be the case when the emote
@@ -169,7 +149,7 @@ public interface Emote extends IMentionable
      * @throws java.lang.UnsupportedOperationException
      *         If this emote is managed by discord ({@link #isManaged()})
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if the Permission {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES MANAGE_EMOTES} is not given
+     *         if the Permission {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} is not given
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this Emote.
@@ -189,7 +169,7 @@ public interface Emote extends IMentionable
      * @throws IllegalStateException
      *         if this emote is created from a message or the bot does not have access to the emote
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}
      *
      * @return The EmoteManager for this Emote
      */

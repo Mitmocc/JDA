@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
@@ -220,7 +221,7 @@ public class MemberImpl implements Member
         if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
 
-        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
     }
 
     @Nonnull
@@ -234,7 +235,7 @@ public class MemberImpl implements Member
     @Override
     public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
     {
-        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
     }
 
     @Override
@@ -254,7 +255,7 @@ public class MemberImpl implements Member
     @Override
     public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
     {
-        return PermissionUtil.checkPermission(channel, this, permissions);
+        return PermissionUtil.checkPermission(channel.getPermissionContainer(), this, permissions);
     }
 
     @Override
@@ -266,7 +267,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean canSync(@Nonnull GuildChannel targetChannel, @Nonnull GuildChannel syncSource)
+    public boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource)
     {
         Checks.notNull(targetChannel, "Channel");
         Checks.notNull(syncSource, "Channel");
@@ -282,7 +283,7 @@ public class MemberImpl implements Member
         if (hasLocalAdmin)
             return true;
 
-        TLongObjectMap<PermissionOverride> existingOverrides = ((AbstractChannelImpl<?, ?>) targetChannel).getOverrideMap();
+        TLongObjectMap<PermissionOverride> existingOverrides = ((IPermissionContainerMixin<?>) targetChannel).getPermissionOverrideMap();
         for (PermissionOverride override : syncSource.getPermissionOverrides())
         {
             PermissionOverride existing = existingOverrides.get(override.getIdLong());
@@ -301,7 +302,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean canSync(@Nonnull GuildChannel channel)
+    public boolean canSync(@Nonnull IPermissionContainer channel)
     {
         Checks.notNull(channel, "Channel");
         Checks.check(channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
@@ -428,7 +429,7 @@ public class MemberImpl implements Member
     {
         return getGuild().getTextChannelsView().stream()
                  .sorted(Comparator.reverseOrder())
-                 .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
+                 .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
                  .findFirst().orElse(null);
     }
 }

@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -80,7 +80,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
         MiscUtil.locked(audioManager.CONNECTION_LOCK, () ->
         {
             //Synchronized to prevent attempts to close while setting up initial objects.
-            VoiceChannel target = guild.getSelfMember().getVoiceState().getChannel();
+            AudioChannel target = guild.getSelfMember().getVoiceState().getChannel();
             if (target == null)
             {
                 WebSocketClient.LOG.warn("Ignoring VOICE_SERVER_UPDATE for unknown channel");

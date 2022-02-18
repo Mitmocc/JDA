@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.audio.hooks.ListenerProxy;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -69,20 +70,20 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    public void openAudioConnection(VoiceChannel channel)
+    public void openAudioConnection(AudioChannel channel)
     {
-        Checks.notNull(channel, "Provided VoiceChannel");
+        Checks.notNull(channel, "Provided AudioChannel");
 
 //        if (!AUDIO_SUPPORTED)
 //            throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");
         if (!getGuild().equals(channel.getGuild()))
-            throw new IllegalArgumentException("The provided VoiceChannel is not a part of the Guild that this AudioManager handles." +
-                    "Please provide a VoiceChannel from the proper Guild");
+            throw new IllegalArgumentException("The provided AudioChannel is not a part of the Guild that this AudioManager handles." +
+                    "Please provide a AudioChannel from the proper Guild");
         final Member self = getGuild().getSelfMember();
         //if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
         //    throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
 
-        //If we are already connected to this VoiceChannel, then do nothing.
+        //If we are already connected to this AudioChannel, then do nothing.
         if (audioConnection != null && channel.equals(audioConnection.getChannel()))
             return;
 
@@ -93,12 +94,14 @@ public class AudioManagerImpl implements AudioManager
             audioConnection.setChannel(channel);
     }
 
-    private void checkChannel(VoiceChannel channel, Member self)
+    private void checkChannel(AudioChannel channel, Member self)
     {
-        EnumSet<Permission> perms = Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, self));
+        EnumSet<Permission> perms = Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), self));
         if (!perms.contains(Permission.VOICE_CONNECT))
             throw new InsufficientPermissionException(channel, Permission.VOICE_CONNECT);
-        final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
+
+        // if userLimit is 0 if no limit is set!
+        final int userLimit = channel instanceof VoiceChannel ? ((VoiceChannel) channel).getUserLimit() : 0;
         if (userLimit > 0 && !perms.contains(Permission.ADMINISTRATOR))
         {
             // Check if we can actually join this channel
@@ -111,7 +114,7 @@ public class AudioManagerImpl implements AudioManager
                 && !perms.contains(Permission.VOICE_MOVE_OTHERS))
             {
                 throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS,
-                    "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
+                    "Unable to connect to AudioChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
         }
     }
@@ -176,21 +179,7 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    @Deprecated
-    public boolean isAttemptingToConnect()
-    {
-        return false;
-    }
-
-    @Override
-    @Deprecated
-    public VoiceChannel getQueuedAudioConnection()
-    {
-        return null;
-    }
-
-    @Override
-    public VoiceChannel getConnectedChannel()
+    public AudioChannel getConnectedChannel()
     {
         return audioConnection == null ? null : audioConnection.getChannel();
     }
@@ -334,7 +323,7 @@ public class AudioManagerImpl implements AudioManager
         audioConnection.setSpeakingDelay(speakingDelay);
     }
 
-    public void setConnectedChannel(VoiceChannel channel)
+    public void setConnectedChannel(AudioChannel channel)
     {
         if (audioConnection != null)
             audioConnection.setChannel(channel);
@@ -349,7 +338,7 @@ public class AudioManagerImpl implements AudioManager
 
     protected void updateVoiceState()
     {
-        VoiceChannel channel = getConnectedChannel();
+        AudioChannel channel = getConnectedChannel();
         if (channel != null)
         {
             //This is technically equivalent to an audio open/move packet.
@@ -358,7 +347,7 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
     protected void finalize()
     {
         if (audioConnection != null)

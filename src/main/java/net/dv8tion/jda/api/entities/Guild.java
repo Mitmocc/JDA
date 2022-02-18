@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -52,12 +49,11 @@ import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -450,13 +446,9 @@ public interface Guild extends ISnowflake
      * <br>This will include deprecated voice regions by default.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Nonnull
     @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
     default RestAction<EnumSet<Region>> retrieveRegions()
     {
         return retrieveRegions(true);
@@ -469,13 +461,9 @@ public interface Guild extends ISnowflake
      *         Whether to include deprecated regions
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Nonnull
     @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
     RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
 
     /**
@@ -703,46 +691,8 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Gets the vanity url for this Guild. The vanity url is the custom invite code of partnered / official Guilds.
-     * The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.
-     * <br>You can check {@link #getFeatures()} to see if this Guild has a vanity url
-     * <p>
-     * This action requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
-     * <p>
-     * Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_CODE_INVALID INVITE_CODE_INVALID}
-     *     <br>If this guild does not have a vanity invite</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The vanity url cannot be fetched due to a permission discrepancy</li>
-     * </ul>
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
-     * @throws java.lang.IllegalStateException
-     *         If the guild doesn't have the VANITY_URL feature
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: String
-     *         <br>The vanity url of this server
-     *
-     * @see    #getFeatures()
-     * @see    #getVanityCode()
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.0.0")
-    @ReplaceWith("getVanityCode()")
-    @CheckReturnValue
-    RestAction<String> retrieveVanityUrl();
-
-    /**
      * The vanity url code for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
      * <br>The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.
-     *
-     * <p>The Vanity Code can be modified using {@link GuildManager#setVanityCode(String)}.
      *
      * @return The vanity code or null
      *
@@ -756,8 +706,6 @@ public interface Guild extends ISnowflake
     /**
      * The vanity url for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
      * <br>The returned String will be the vanity invite link to this guild.
-     *
-     * <p>The Vanity Code can be modified using {@link GuildManager#setVanityCode(String)}.
      *
      * @return The vanity url or null
      *
@@ -960,6 +908,8 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     RestAction<MetaData> retrieveMetaData();
 
+
+
     /**
      * Provides the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that has been set as the channel
      * which {@link net.dv8tion.jda.api.entities.Member Members} will be moved to after they have been inactive in a
@@ -1064,46 +1014,6 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     Timeout getAfkTimeout();
-
-    /**
-     * The Voice {@link net.dv8tion.jda.api.Region Region} that this Guild is
-     * using for audio connections.
-     * <br>If the Region is not recognized, returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN} but you
-     * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
-     *
-     * <p>This value can be modified using {@link GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
-     *
-     * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("VoiceChannel.getRegion()")
-    @DeprecatedSince("4.3.0")
-    @Nonnull
-    default Region getRegion()
-    {
-        return Region.fromKey(getRegionRaw());
-    }
-
-    /**
-     * The raw voice region name that this Guild is using
-     * for audio connections.
-     * <br>This is resolved to an enum constant of {@link net.dv8tion.jda.api.Region Region} by {@link #getRegion()}!
-     *
-     * <p>This value can be modified using {@link GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
-     *
-     * @return Raw region name
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("VoiceChannel.getRegionRaw()")
-    @DeprecatedSince("4.3.0")
-    @Nonnull
-    String getRegionRaw();
 
     /**
      * Used to determine if the provided {@link net.dv8tion.jda.api.entities.User User} is a member of this Guild.
@@ -1429,7 +1339,94 @@ public interface Guild extends ISnowflake
     MemberCacheView getMemberCache();
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link GuildScheduledEvent GuildScheduledEvents} of this Guild.
+     * <br>Scheduled events are sorted by their start time, and events that start at the same time
+     * are sorted by their snowflake ID.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     */
+    @Nonnull
+    SortedSnowflakeCacheView<GuildScheduledEvent> getScheduledEventCache();
+
+    /**s
+     * Gets a list of all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} with the provided name,
+     * then this returns an empty list.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} objects.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all GuildScheduledEvent names that match the provided name.
+     */
+    @Nonnull
+    default List<GuildScheduledEvent> getScheduledEventsbyName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getScheduledEventCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getGuildScheduledEventById(String)}, but it only
+     * checks this specific Guild for a scheduled event.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with matching id.
+     */
+    @Nullable
+    default GuildScheduledEvent getScheduledEventById(@Nonnull String id)
+    {
+        return getScheduledEventCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getGuildScheduledEventById(long)}, but it only
+     * checks this specific Guild for a scheduled event.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with matching id.
+     */
+    @Nullable
+    default GuildScheduledEvent getScheduledEventById(long id)
+    {
+        return getScheduledEventCache().getElementById(id);
+    }
+
+    /**
+     * Gets all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>The scheduled events returned will be sorted by their start times, with events starting earlier appearing first in the list. If two events are
+     * set to start at the same time, the event with the lesser snowflake ID will appear first.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getScheduledEventCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return An immutable List of {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents}.
+     */
+    @Nonnull
+    default List<GuildScheduledEvent> getScheduledEvents()
+    {
+        return getScheduledEventCache().asList();
+    }
+
+    /**
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -1457,7 +1454,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -1476,18 +1473,26 @@ public interface Guild extends ISnowflake
     @Nullable
     default GuildChannel getGuildChannelById(long id)
     {
+        //TODO-v5-unified-channel-cache
         GuildChannel channel = getTextChannelById(id);
         if (channel == null)
+            channel = getNewsChannelById(id);
+        if (channel == null)
             channel = getVoiceChannelById(id);
+        if (channel == null)
+            channel = getStageChannelById(id);
         if (channel == null)
             channel = getStoreChannelById(id);
         if (channel == null)
             channel = getCategoryById(id);
+        if (channel == null)
+            channel = getThreadChannelById(id);
+
         return channel;
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -1518,7 +1523,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -1554,8 +1559,22 @@ public interface Guild extends ISnowflake
             case CATEGORY:
                 return getCategoryById(id);
         }
+
+        if (type.isThread())
+            return getThreadChannelById(id);
+
         return null;
     }
+
+    /**
+     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} of this Guild.
+     * <br>StageChannel are sorted according to their position.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     */
+    @Nonnull
+    SortedSnowflakeCacheView<StageChannel> getStageChannelCache();
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild that have the same
@@ -1572,11 +1591,7 @@ public interface Guild extends ISnowflake
     @Nonnull
     default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
-        return getVoiceChannelsByName(name, ignoreCase)
-                .stream()
-                .filter(StageChannel.class::isInstance)
-                .map(StageChannel.class::cast)
-                .collect(Collectors.toList());
+        return getStageChannelCache().getElementsByName(name, ignoreCase);
     }
 
     /**
@@ -1597,7 +1612,7 @@ public interface Guild extends ISnowflake
     @Nullable
     default StageChannel getStageChannelById(@Nonnull String id)
     {
-        return getStageChannelById(MiscUtil.parseSnowflake(id));
+        return getStageChannelCache().getElementById(id);
     }
 
     /**
@@ -1615,8 +1630,7 @@ public interface Guild extends ISnowflake
     @Nullable
     default StageChannel getStageChannelById(long id)
     {
-        VoiceChannel channel = getVoiceChannelById(id);
-        return channel instanceof StageChannel ? (StageChannel) channel : null;
+        return getStageChannelCache().getElementById(id);
     }
 
     /**
@@ -1624,18 +1638,99 @@ public interface Guild extends ISnowflake
      * <br>The channels returned will be sorted according to their position.
      *
      * <p>This copies the backing store into a list. This means every call
-     * creates a new list with O(n) complexity.
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getStageChannelCache()} and use its more efficient
+     * versions of handling these values.
      *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
      */
     @Nonnull
     default List<StageChannel> getStageChannels()
     {
-        return getVoiceChannels()
-                .stream()
-                .filter(StageChannel.class::isInstance)
-                .map(StageChannel.class::cast)
-                .collect(Collectors.toList());
+       return getStageChannelCache().asList();
+    }
+
+    /**
+     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link ThreadChannel ThreadChannel} of this Guild.
+     * <br>StageChannel are sorted according to their position.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     */
+    @Nonnull
+    SortedSnowflakeCacheView<ThreadChannel> getThreadChannelCache();
+
+    /**
+     * Gets a list of all {@link ThreadChannel ThreadChannel} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link ThreadChannel ThreadChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link ThreadChannel ThreadChannels}.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all ThreadChannel names that match the provided name.
+     */
+    @Nonnull
+    default List<ThreadChannel> getThreadChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getThreadChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Gets a {@link ThreadChannel ThreadChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getThreadChannelById(String)}, but it only
+     * checks this specific Guild for a ThreadChannel.
+     * <br>If there is no {@link ThreadChannel ThreadChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link ThreadChannel ThreadChannel}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
+     */
+    @Nullable
+    default ThreadChannel getThreadChannelById(@Nonnull String id)
+    {
+        return getThreadChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link ThreadChannel ThreadChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getThreadChannelById(long)}, but it only
+     * checks this specific Guild for a ThreadChannel.
+     * <br>If there is no {@link ThreadChannel ThreadChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link ThreadChannel ThreadChannel}.
+     *
+     * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
+     */
+    @Nullable
+    default ThreadChannel getThreadChannelById(long id)
+    {
+        return getThreadChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets all {@link ThreadChannel ThreadChannel} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getThreadChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return An immutable List of {@link ThreadChannel ThreadChannels}.
+     */
+    @Nonnull
+    default List<ThreadChannel> getThreadChannels()
+    {
+        return getThreadChannelCache().asList();
     }
 
     /**
@@ -1901,13 +1996,95 @@ public interface Guild extends ISnowflake
     SortedSnowflakeCacheView<TextChannel> getTextChannelCache();
 
     /**
+     * Gets a {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getNewsChannelById(String)}, but it only
+     * checks this specific Guild for a NewsChannel.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with matching id.
+     */
+    @Nullable
+    default NewsChannel getNewsChannelById(@Nonnull String id)
+    {
+        return getNewsChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getNewsChannelById(long)}, but it only
+     * checks this specific Guild for a NewsChannel.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with matching id.
+     */
+    @Nullable
+    default NewsChannel getNewsChannelById(long id)
+    {
+        return getNewsChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets all {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>The channels returned will be sorted according to their position.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getNewsChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return An immutable List of all {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} in this Guild.
+     */
+    @Nonnull
+    default List<NewsChannel> getNewsChannels()
+    {
+        return getNewsChannelCache().asList();
+    }
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels}.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all NewsChannels names that match the provided name.
+     */
+    @Nonnull
+    default List<NewsChannel> getNewsChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getNewsChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} of this Guild.
+     * <br>NewsChannel are sorted according to their position.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     */
+    @Nonnull
+    SortedSnowflakeCacheView<NewsChannel> getNewsChannelCache();
+
+    /**
      * Gets a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} from this guild that has the same id as the
      * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getVoiceChannelById(String)}, but it only
      * checks this specific Guild for a VoiceChannel.
      * <br>If there is no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
-     *
-     * <p>This may also contain {@link StageChannel StageChannels}!
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
@@ -1930,8 +2107,6 @@ public interface Guild extends ISnowflake
      * <br>If there is no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
-     * <p>This may also contain {@link StageChannel StageChannels}!
-     *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      *
@@ -1952,8 +2127,6 @@ public interface Guild extends ISnowflake
      * a local variable or use {@link #getVoiceChannelCache()} and use its more efficient
      * versions of handling these values.
      *
-     * <p>This may also contain {@link StageChannel StageChannels}!
-     *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
     @Nonnull
@@ -1966,8 +2139,6 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} with the provided name, then this returns an empty list.
-     *
-     * <p>This may also contain {@link StageChannel StageChannels}!
      *
      * @param  name
      *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
@@ -1987,8 +2158,6 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this Guild.
      * <br>VoiceChannels are sorted according to their position.
      *
-     * <p>This may also contain {@link StageChannel StageChannels}!
-     *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
@@ -2003,10 +2172,12 @@ public interface Guild extends ISnowflake
      * <ol>
      *     <li>TextChannel and StoreChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
+     *     <li>StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
      *             <li>TextChannel and StoreChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
+     *             <li>StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
@@ -2029,10 +2200,12 @@ public interface Guild extends ISnowflake
      * <ol>
      *     <li>TextChannel and StoreChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
+     *     <li>StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
      *             <li>TextChannel and StoreChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
+     *             <li>StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
@@ -2356,7 +2529,7 @@ public interface Guild extends ISnowflake
      * Retrieves an immutable list of emotes together with their respective creators.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List of {@link net.dv8tion.jda.api.entities.ListedEmote ListedEmote}
      *
@@ -2371,7 +2544,7 @@ public interface Guild extends ISnowflake
      * <br><b>This does not include unicode emoji.</b>
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2398,7 +2571,7 @@ public interface Guild extends ISnowflake
      * Retrieves a listed emote together with its respective creator.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2425,7 +2598,7 @@ public interface Guild extends ISnowflake
      * Retrieves a listed emote together with its respective creator.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2455,7 +2628,7 @@ public interface Guild extends ISnowflake
             if (emote instanceof ListedEmote)
             {
                 ListedEmote listedEmote = (ListedEmote) emote;
-                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
                     return listedEmote;
             }
             return null;
@@ -2620,7 +2793,7 @@ public interface Guild extends ISnowflake
      * that is not directed at a specific {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
      *
      * <p>Note: This channel is the first channel in the guild (ordered by position) that the {@link #getPublicRole()}
-     * has the {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} in.
+     * has the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in.
      *
      * @return The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} representing the default channel for this guild
      */
@@ -2642,6 +2815,13 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     GuildManager getManager();
+
+    /**
+     * Returns whether this Guild has its boost progress bar shown.
+     *
+     * @return True, if this Guild has its boost progress bar shown
+     */
+    boolean isBoostProgressBarEnabled();
 
     /**
      * A {@link PaginationAction PaginationAction} implementation
@@ -2798,7 +2978,7 @@ public interface Guild extends ISnowflake
      * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * <p>To get all invites for a {@link GuildChannel GuildChannel}
-     * use {@link GuildChannel#retrieveInvites() GuildChannel.retrieveInvites()}
+     * use {@link IInviteContainer#retrieveInvites() GuildChannel.retrieveInvites()}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
@@ -2806,7 +2986,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
      *
-     * @see     GuildChannel#retrieveInvites()
+     * @see     IInviteContainer#retrieveInvites()
      */
     @Nonnull
     @CheckReturnValue
@@ -2930,61 +3110,6 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     ExplicitContentLevel getExplicitContentLevel();
-
-    /**
-     * Checks if the current Verification-level of this guild allows JDA to send messages to it.
-     *
-     * @return True if Verification-level allows sending of messages, false if not.
-     *
-     * @see    net.dv8tion.jda.api.entities.Guild.VerificationLevel
-     *         VerificationLevel Enum with a list of possible verification-levels and their requirements
-     *
-     * @deprecated Bots don't need to check this and client accounts are not supported
-     */
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    boolean checkVerification();
-
-    /**
-     * Whether or not this Guild is available. A Guild can be unavailable, if the Discord server has problems.
-     * <br>If a Guild is unavailable, it will be removed from the guild cache. You cannot receive events for unavailable guilds.
-     *
-     * @return If the Guild is available
-     *
-     * @deprecated This will be removed in a future version,
-     *             unavailable guilds are now removed from cache.
-     *             Replace with {@link JDA#isUnavailable(long)}
-     */
-    @ForRemoval(deadline = "4.4.0")
-    @Deprecated
-    @DeprecatedSince("4.1.0")
-    @ReplaceWith("getJDA().isUnavailable(guild.getIdLong())")
-    boolean isAvailable();
-
-    /**
-     * Requests member chunks for this guild.
-     * <br>This returns a completed future if the member demand is already matched.
-     * When {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is disabled
-     * this will do nothing since {@link #getMemberCount()} cannot be tracked.
-     *
-     * <p>Calling {@link CompletableFuture#cancel(boolean)} will not cancel the chunking process.
-     *
-     * <p><b>You MUST NOT use blocking operations such as {@link CompletableFuture#join()} or {@link Future#get()}!</b>
-     * The response handling happens on the event thread by default.
-     *
-     * @return {@link CompletableFuture} representing the chunking task
-     *
-     * @see    #pruneMemberCache()
-     *
-     * @deprecated Replace with {@link #loadMembers()}, {@link #loadMembers(Consumer)}, or {@link #findMembers(Predicate)}
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("loadMembers(Consumer<Member>) or loadMembers()")
-    CompletableFuture<Void> retrieveMembers();
 
     /**
      * Retrieves and collects members of this guild into a list.
@@ -3751,12 +3876,64 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit);
 
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<ThreadChannel>> retrieveActiveThreads();
+
+    /**
+     * Retrieves a {@link GuildScheduledEvent} by its ID.
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKOWN_GUILD_SCHEDULED_EVENT}
+     *     <br>A scheduled event with the specified ID does not exist in the guild, or the currently logged in user does not
+     *     have access to it.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the {@link GuildScheduledEvent}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
+     *
+     * @see #getScheduledEventById(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id);
+
+    /**
+     * Retrieves a {@link GuildScheduledEvent} by its ID.
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKOWN_GUILD_SCHEDULED_EVENT}
+     *     <br>A scheduled event with the specified ID does not exist in this guild, or the currently logged in user does not
+     *     have access to it.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the {@link GuildScheduledEvent}
+     *
+     * @throws IllegalArgumentException
+     *         If the specified ID is {@code null} or empty
+     *
+     * @throws NumberFormatException
+     *         If the specified ID cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
+     *
+     * @see #getScheduledEventById(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<GuildScheduledEvent> retrieveScheduledEventById(@Nonnull String id) {
+        return retrieveScheduledEventById(MiscUtil.parseSnowflake(id));
+    }
+
     /* From GuildController */
 
     /**
-     * Used to move a {@link net.dv8tion.jda.api.entities.Member Member} from one {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
-     * to another {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
-     * <br>As a note, you cannot move a Member that isn't already in a VoiceChannel. Also they must be in a VoiceChannel
+     * Used to move a {@link net.dv8tion.jda.api.entities.Member Member} from one {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}
+     * to another {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}.
+     * <br>As a note, you cannot move a Member that isn't already in a AudioChannel. Also they must be in a AudioChannel
      * in the same Guild as the one that you are moving them to.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -3777,35 +3954,35 @@ public interface Guild extends ISnowflake
      *
      * @param  member
      *         The {@link net.dv8tion.jda.api.entities.Member Member} that you are moving.
-     * @param  voiceChannel
-     *         The destination {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} to which the member is being
+     * @param  audioChannel
+     *         The destination {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} to which the member is being
      *         moved to. Or null to perform a voice kick.
      *
      * @throws IllegalStateException
-     *         If the Member isn't currently in a VoiceChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
+     *         If the Member isn't currently in a AudioChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the provided member is {@code null}</li>
      *             <li>If the provided Member isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
-     *             <li>If the provided VoiceChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *             <li>If the provided AudioChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         <ul>
      *             <li>If this account doesn't have {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS}
-     *                 in the VoiceChannel that the Member is currently in.</li>
+     *                 in the AudioChannel that the Member is currently in.</li>
      *             <li>If this account <b>AND</b> the Member being moved don't have
-     *                 {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT} for the destination VoiceChannel.</li>
+     *                 {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT} for the destination AudioChannel.</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable VoiceChannel voiceChannel);
+    RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable AudioChannel audioChannel);
 
     /**
-     * Used to kick a {@link net.dv8tion.jda.api.entities.Member Member} from a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
-     * <br>As a note, you cannot kick a Member that isn't already in a VoiceChannel. Also they must be in a VoiceChannel
+     * Used to kick a {@link net.dv8tion.jda.api.entities.Member Member} from a {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}.
+     * <br>As a note, you cannot kick a Member that isn't already in a AudioChannel. Also they must be in a AudioChannel
      * in the same Guild.
      *
      * <p>Equivalent to {@code moveVoiceMember(member, null)}.
@@ -3827,16 +4004,16 @@ public interface Guild extends ISnowflake
      *         The {@link net.dv8tion.jda.api.entities.Member Member} that you are moving.
      *
      * @throws IllegalStateException
-     *         If the Member isn't currently in a VoiceChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
+     *         If the Member isn't currently in a AudioChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If any of the provided arguments is {@code null}</li>
      *             <li>If the provided Member isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
-     *             <li>If the provided VoiceChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *             <li>If the provided AudioChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this account doesn't have {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS}
-     *         in the VoiceChannel that the Member is currently in.
+     *         in the AudioChannel that the Member is currently in.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
@@ -5129,6 +5306,70 @@ public interface Guild extends ISnowflake
     ChannelAction<TextChannel> createTextChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
+     * Creates a new {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the NewsChannel to create
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *
+     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new NewsChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name)
+    {
+        return createNewsChannel(name, null);
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the NewsChannel to create
+     * @param  parent
+     *         The optional parent category for this channel, or null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         or the provided parent is not in the same guild.
+     *
+     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new NewsChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name, @Nullable Category parent);
+
+    /**
      * Creates a new {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
@@ -5286,7 +5527,7 @@ public interface Guild extends ISnowflake
     ChannelAction<Category> createCategory(@Nonnull String name);
 
     /**
-     * Creates a copy of the specified {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     * Creates a copy of the specified {@link GuildChannel GuildChannel}
      * in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <br>The provided channel need not be in the same Guild for this to work!
      *
@@ -5312,7 +5553,7 @@ public interface Guild extends ISnowflake
      * @param  <T>
      *         The channel type
      * @param  channel
-     *         The {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} to use for the copy template
+     *         The {@link GuildChannel GuildChannel} to use for the copy template
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided channel is {@code null}
@@ -5331,7 +5572,7 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     @SuppressWarnings("unchecked") // we need to do an unchecked cast for the channel type here
-    default <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
+    default <T extends ICopyableChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
     {
         Checks.notNull(channel, "Channel");
         return (ChannelAction<T>) channel.createCopy(this);
@@ -5403,7 +5644,7 @@ public interface Guild extends ISnowflake
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Emote Emote} in this Guild.
      * <br>If one or more Roles are specified the new Emote will only be available to Members with any of the specified Roles (see {@link Member#canInteract(Emote)})
-     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission.
+     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} Permission.
      *
      * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
      *
@@ -5428,13 +5669,67 @@ public interface Guild extends ISnowflake
      *         <br>If no roles are provided the Emote will be available to all Members of this Guild
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} Permission
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.api.entities.Emote Emote}
      */
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles);
+
+    /**
+     * Creates a new {@link GuildScheduledEvent}.
+     *
+     * <h2>Requirements</h2>
+     *
+     * Events that are created are required to have a name, a location, and a start time. Depending on the
+     * type of location provided, an event will be of one of three different {@link GuildScheduledEvent.Type Types}:
+     * <ol>
+     *     <li>
+     *         {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+     *         <br>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.StageChannel}. The
+     *         following permissions are required in the specified stage channel in order to create an event there:
+     *          <ul>
+     *              <li>{@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}</li>
+     *              <li>{@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}</li>
+     *              <li>{@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS}</li>
+     *              <li>{@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS Permission.VOICE_MOVE_OTHERS}}</li>
+     *         </ul>
+     *     </li>
+     *     <li>
+     *         {@link GuildScheduledEvent.Type#VOICE Type.VOICE}
+     *         <br>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.VoiceChannel}. The
+     *         following permissions are required in the specified voice channel in order to create an event there:
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#VOICE_CONNECT Permission.VOICE_CONNECT}</li>
+     *         </ul>
+     *     </li>
+     *     <li>
+     *         {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}
+     *         <br>These events are set to take place at a custom location. {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
+     *         is required on the guild level in order to create this type of event. Additionally, an end time <em>must</em>
+     *         also be specified.
+     *     </li>
+     * </ol>
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * guild.createScheduledEvent()
+     *     .setName("Cactus Beauty Contest")
+     *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
+     *     .setStartTime(OffsetDateTime.of(LocalDate.of(2025, 12, 31), LocalTime.of(12, 45), ZoneOffset.ofHours(7)))
+     *     .setEndTime(OffsetDateTime.of(LocalDate.of(2025, 12, 31), LocalTime.of(15, 45), ZoneOffset.ofHours(7)))
+     *     .setLocation("Mike's Backyard")
+     *     .queue();
+     * }</pre>
+     *
+     * @return A GuildScheduledEventAction object
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildScheduledEventAction createScheduledEvent();
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getCategories() Guild.getCategories()}
