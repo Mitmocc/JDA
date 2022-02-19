@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
  * to a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
  *
  * Can be used to detect when someone has indicated that they are interested in an event and also retrieve their
- * {@link {@link net.dv8tion.jda.api.entities.User User} object as well as the {@link GuildScheduledEvent}.
+ * {@link net.dv8tion.jda.api.entities.User User} object as well as the {@link GuildScheduledEvent}.
  */
 public class GuildScheduledEventUserAddEvent extends GenericGuildScheduledEventGatewayEvent
 {
