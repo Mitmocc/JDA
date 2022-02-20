@@ -508,18 +508,18 @@ public class GuildImpl implements Guild
     @CheckReturnValue
     @Nonnull
     @Override
-    public AuditableRestAction<GuildScheduledEvent> createScheduledEvent()
+    public AuditableRestAction<GuildScheduledEvent> createScheduledEvent(Member creator, String name, String description, OffsetDateTime startTime, OffsetDateTime endTime, long channelId)
     {
         checkPermission(Permission.MANAGE_EVENTS);
 
         DataObject body = DataObject.empty();
-        body.put("name", "test1");
-        body.put("description", "test2");
-        body.put("scheduled_start_time", OffsetDateTime.now().plusHours(10).format(DateTimeFormatter.ISO_DATE_TIME));
-        body.put("scheduled_end_time", OffsetDateTime.now().plusHours(12).format(DateTimeFormatter.ISO_DATE_TIME));
-        body.put("creator_id", 249028994584805379L);
+        body.put("name", name);
+        body.put("description", description);
+        body.put("scheduled_start_time", startTime);
+        body.put("scheduled_end_time", endTime);
+        body.put("creator_id", creator.getId());
         body.put("entity_type", 2);
-        body.put("channel_id", 944386402362216482L);
+        body.put("channel_id", channelId);
         body.put("privacy_level", 2);
 
         JDAImpl jda = getJDA();
