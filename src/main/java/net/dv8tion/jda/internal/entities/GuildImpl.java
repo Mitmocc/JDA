@@ -515,8 +515,8 @@ public class GuildImpl implements Guild
         DataObject body = DataObject.empty();
         body.put("name", name);
         body.put("description", description);
-        body.put("scheduled_start_time", startTime);
-        body.put("scheduled_end_time", endTime);
+        body.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
+        body.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
         body.put("creator_id", creator.getId());
         body.put("entity_type", 2);
         body.put("channel_id", channelId);
