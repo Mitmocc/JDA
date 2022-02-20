@@ -520,6 +520,7 @@ public class GuildImpl implements Guild
         body.put("creator_id", 249028994584805379L);
         body.put("entity_type", 2);
         body.put("channel_id", 944386402362216482L);
+        body.put("privacy_level", 2);
 
         JDAImpl jda = getJDA();
         Route.CompiledRoute route = Route.Guilds.CREATE_SCHEDULED_EVENT.compile(getId());
