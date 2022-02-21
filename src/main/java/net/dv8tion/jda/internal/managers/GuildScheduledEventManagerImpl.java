@@ -43,7 +43,8 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     public GuildScheduledEventManagerImpl(GuildScheduledEvent event)
     {
         super(event.getJDA(), Route.Guilds.MODIFY_SCHEDULED_EVENT.compile(event.getGuild().getId(), event.getId()));
-        System.out.println("reachedeventmanagerimpl");
+        System.out.println(event.getGuild().getId());
+        System.out.println(event.getId());
         JDA api = event.getJDA();
         this.event = event;
         if (isPermissionChecksEnabled())
