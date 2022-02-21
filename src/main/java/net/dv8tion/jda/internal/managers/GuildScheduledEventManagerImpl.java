@@ -19,8 +19,10 @@ package net.dv8tion.jda.internal.managers;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,8 +45,6 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     public GuildScheduledEventManagerImpl(GuildScheduledEvent event)
     {
         super(event.getJDA(), Route.Guilds.MODIFY_SCHEDULED_EVENT.compile(event.getGuild().getId(), event.getId()));
-        System.out.println(event.getGuild().getId());
-        System.out.println(event.getId());
         JDA api = event.getJDA();
         this.event = event;
         if (isPermissionChecksEnabled())
@@ -124,5 +124,17 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     public GuildScheduledEventManager setStatus(@NotNull GuildScheduledEvent.Status status)
     {
         return null;
+    }
+
+    @Override
+    protected RequestBody finalizeData()
+    {
+        DataObject object = DataObject.empty().put("name", getGuildScheduledEvent().getName());
+        if (shouldUpdate(NAME))
+            object.put("name", name);
+        if (shouldUpdate(DESCRIPTION))
+            object.put("description", description);
+
+        return getRequestBody(object);
     }
 }
