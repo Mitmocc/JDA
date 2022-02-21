@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.managers.GuildScheduledEventManagerImpl;
 import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -170,7 +171,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     public GuildScheduledEventManager getManager()
     {
         if (manager == null)
-        //    return manager = new GuildScheduledEventManagerImpl(this);
+            return manager = new GuildScheduledEventManagerImpl(this);
         return manager;
     }
 
