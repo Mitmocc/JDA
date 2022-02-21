@@ -511,7 +511,6 @@ public class GuildImpl implements Guild
     public AuditableRestAction<GuildScheduledEvent> createScheduledEvent(String name, String description, OffsetDateTime startTime, OffsetDateTime endTime, long channelId)
     {
         checkPermission(Permission.MANAGE_EVENTS);
-
         DataObject body = DataObject.empty();
         body.put("name", name);
         body.put("description", description);
