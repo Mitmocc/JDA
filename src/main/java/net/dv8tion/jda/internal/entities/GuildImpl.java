@@ -508,7 +508,7 @@ public class GuildImpl implements Guild
     @CheckReturnValue
     @Nonnull
     @Override
-    public AuditableRestAction<GuildScheduledEvent> createScheduledEvent(Member creator, String name, String description, OffsetDateTime startTime, OffsetDateTime endTime, long channelId)
+    public AuditableRestAction<GuildScheduledEvent> createScheduledEvent(String name, String description, OffsetDateTime startTime, OffsetDateTime endTime, long channelId)
     {
         checkPermission(Permission.MANAGE_EVENTS);
 
@@ -517,10 +517,10 @@ public class GuildImpl implements Guild
         body.put("description", description);
         body.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
         body.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
-        body.put("creator_id", creator.getId());
         body.put("entity_type", 2);
         body.put("channel_id", channelId);
         body.put("privacy_level", 2);
+        body.put("creator_id", getJDA().getSelfUser().getId());
 
         JDAImpl jda = getJDA();
         Route.CompiledRoute route = Route.Guilds.CREATE_SCHEDULED_EVENT.compile(getId());
