@@ -916,8 +916,7 @@ public class EntityBuilder
     }
     public GuildScheduledEvent createGuildScheduledEvent(GuildImpl guild, DataObject json, long guildId)
     {
-        json.put("entity_type", 2);
-        json.put("privacy_level", 2);
+
         final long id = json.getLong("id");
         if (guild == null)
             guild = (GuildImpl) getJDA().getGuildsView().get(guildId);

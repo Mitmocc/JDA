@@ -151,6 +151,8 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     protected RequestBody finalizeData()
     {
         DataObject object = DataObject.empty();
+        object.put("entity_type", 2);
+        object.put("privacy_level", 2);
         if (name != null)
             object.put("name", name);
         if (description != null)
