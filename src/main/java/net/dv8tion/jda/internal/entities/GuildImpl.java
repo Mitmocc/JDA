@@ -485,13 +485,7 @@ public class GuildImpl implements Guild
         // TODO: Implement
         return null;
     }
-    @Nullable
-    @Override
-    public GuildScheduledEvent getScheduledEventById(long id)
-    {
 
-        return getScheduledEventById(id);
-    }
     @Override
     @Nonnull
     public List<GuildScheduledEvent> getScheduledEvents()
