@@ -113,14 +113,16 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     public GuildScheduledEventAction setLocation(@NotNull StageChannel stageChannel)
     {
-        return null;
+        this.location = stageChannel;
+        return this;
     }
 
     @NotNull
     @Override
     public GuildScheduledEventAction setLocation(@NotNull VoiceChannel voiceChannel)
     {
-        return null;
+        this.location = voiceChannel;
+        return this;
     }
 
     @NotNull
