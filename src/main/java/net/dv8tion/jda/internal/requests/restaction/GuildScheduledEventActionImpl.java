@@ -16,13 +16,10 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.GuildScheduledEventAction;
-import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -37,20 +34,20 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
 public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<GuildScheduledEvent> implements GuildScheduledEventAction
 {
     protected final Guild guild;
     protected String name, description;
-    protected GuildChannel location;
+    protected String location;
     protected OffsetDateTime startTime, endTime;
+    protected int entityType;
 
     /**
      * Creates a new RoleAction instance
      *
      * @param  guild
-     *         The {@link Guild Guild} for which the Role should be created.
+     *         The {@link Guild Guild} for which the Scheduled Event should be created.
      */
     public GuildScheduledEventActionImpl(Guild guild)
     {
@@ -105,7 +102,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 1000, "Description");
-        this.description = name;
+        this.description = description;
         return this;
     }
 
@@ -113,7 +110,8 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     public GuildScheduledEventAction setLocation(@NotNull StageChannel stageChannel)
     {
-        this.location = stageChannel;
+        this.location = stageChannel.getId();
+        this.entityType = 1;
         return this;
     }
 
@@ -121,7 +119,8 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     public GuildScheduledEventAction setLocation(@NotNull VoiceChannel voiceChannel)
     {
-        this.location = voiceChannel;
+        this.location = voiceChannel.getId();
+        this.entityType = 2;
         return this;
     }
 
@@ -129,7 +128,9 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     public GuildScheduledEventAction setLocation(@NotNull String externalLocation)
     {
-        return null;
+        this.location = externalLocation;
+        this.entityType = 3;
+        return this;
     }
 
     @NotNull
@@ -153,14 +154,16 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     protected RequestBody finalizeData()
     {
         DataObject object = DataObject.empty();
-        object.put("entity_type", 2);
+        object.put("entity_type", entityType);
         object.put("privacy_level", 2);
         if (name != null)
             object.put("name", name);
         if (description != null)
             object.put("description", description);
-        if (location != null)
-            object.put("channel_id", location.getIdLong());
+        if (location != null && (entityType == 1 || entityType == 2))
+            object.put("channel_id", location);
+        if (location != null && entityType == 3 )
+            object.put("entity_metadata", DataObject.empty().put("location", location));
         if (startTime != null)
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (endTime != null)
