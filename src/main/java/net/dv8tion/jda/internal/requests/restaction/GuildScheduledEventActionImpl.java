@@ -39,6 +39,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 {
     protected final Guild guild;
     protected String name, description;
+    protected long channelId;
     protected String location;
     protected OffsetDateTime startTime, endTime;
     protected int entityType;
@@ -110,7 +111,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     public GuildScheduledEventAction setLocation(@NotNull StageChannel stageChannel)
     {
-        this.location = stageChannel.getId();
+        this.channelId = stageChannel.getIdLong();
         this.entityType = 1;
         return this;
     }
@@ -119,7 +120,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     public GuildScheduledEventAction setLocation(@NotNull VoiceChannel voiceChannel)
     {
-        this.location = voiceChannel.getId();
+        this.channelId = voiceChannel.getIdLong();
         this.entityType = 2;
         return this;
     }
@@ -160,9 +161,9 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
             object.put("name", name);
         if (description != null)
             object.put("description", description);
-        if (location != null && (entityType == 1 || entityType == 2))
-            object.put("channel_id", location);
-        if (location != null && entityType == 3 )
+        if (entityType == 1 || entityType == 2)
+            object.put("channel_id", channelId);
+        if (entityType == 3)
             object.put("entity_metadata", DataObject.empty().put("location", location));
         if (startTime != null)
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));

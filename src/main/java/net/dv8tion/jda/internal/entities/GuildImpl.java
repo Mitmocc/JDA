@@ -496,37 +496,12 @@ public class GuildImpl implements Guild
                         .collect(Collectors.toList()));
     }
 
-
-    @CheckReturnValue
-    @Nonnull
-    public AuditableRestAction<GuildScheduledEvent> sss(String name, String description, OffsetDateTime startTime, OffsetDateTime endTime, long channelId)
-    {
-        checkPermission(Permission.MANAGE_EVENTS);
-        DataObject body = DataObject.empty();
-        body.put("name", name);
-        body.put("description", description);
-        body.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
-        body.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
-        body.put("entity_type", 2);
-        body.put("channel_id", channelId);
-        body.put("privacy_level", 2);
-        body.put("creator_id", getJDA().getSelfUser().getId());
-
-        JDAImpl jda = getJDA();
-        Route.CompiledRoute route = Route.Guilds.CREATE_SCHEDULED_EVENT.compile(getId());
-        return new AuditableRestActionImpl<>(jda, route, body, (response, request) ->
-        {
-            DataObject obj = response.getObject();
-            return jda.getEntityBuilder().createGuildScheduledEvent(this, obj, getIdLong());
-        });
-    }
-
     @Nonnull
     @Override
-    public GuildScheduledEventAction createScheduledEvent(String name)
+    public GuildScheduledEventAction createScheduledEvent()
     {
         checkPermission(Permission.MANAGE_EVENTS);
-        return new GuildScheduledEventActionImpl(this).setName(name);
+        return new GuildScheduledEventActionImpl(this);
     }
 
     @Override

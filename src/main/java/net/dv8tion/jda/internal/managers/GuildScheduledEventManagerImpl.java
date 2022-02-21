@@ -35,8 +35,10 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
 {
     protected GuildScheduledEvent event;
     protected String name, description;
-    protected GuildChannel location;
+    protected long channelId;
+    protected String location;
     protected OffsetDateTime startTime, endTime;
+    protected int entityType;
 
     public GuildScheduledEventManagerImpl(GuildScheduledEvent event)
     {
@@ -84,7 +86,8 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setLocation(@NotNull StageChannel stageChannel)
     {
-        this.location = stageChannel;
+        this.channelId = stageChannel.getIdLong();
+        this.entityType = 1;
         set |= LOCATION;
         return this;
     }
@@ -93,7 +96,8 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setLocation(@NotNull VoiceChannel voiceChannel)
     {
-        this.location = voiceChannel;
+        this.channelId = voiceChannel.getIdLong();
+        this.entityType = 2;
         set |= LOCATION;
         return this;
     }
@@ -102,7 +106,10 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setLocation(@NotNull String externalLocation)
     {
-        return null;
+        this.location = externalLocation;
+        this.entityType = 3;
+        set |= LOCATION;
+        return this;
     }
 
     @NotNull
@@ -139,7 +146,11 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         if (shouldUpdate(DESCRIPTION))
             object.put("description", description);
         if (shouldUpdate(LOCATION))
-            object.put("channel_id", location.getIdLong());
+            object.put("entity_type", entityType);
+            if (this.entityType == 1 || this.entityType == 2)
+                object.put("channel_id", channelId);
+             else if (this.entityType == 3)
+                object.put("entity_metadata", DataObject.empty().put("location", location));
         if (shouldUpdate(START_TIME))
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(END_TIME))
