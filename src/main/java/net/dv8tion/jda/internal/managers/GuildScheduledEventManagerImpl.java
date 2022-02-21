@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -29,23 +28,19 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEventManager> implements GuildScheduledEventManager
 {
     protected GuildScheduledEvent event;
-
     protected String name, description;
     protected GuildChannel location;
     protected OffsetDateTime startTime, endTime;
-    protected boolean mentionable;
-    protected Icon icon;
-    protected String emoji;
 
     public GuildScheduledEventManagerImpl(GuildScheduledEvent event)
     {
         super(event.getJDA(), Route.Guilds.MODIFY_SCHEDULED_EVENT.compile(event.getGuild().getId(), event.getId()));
-        JDA api = event.getJDA();
         this.event = event;
         if (isPermissionChecksEnabled())
             checkPermissions();
@@ -60,8 +55,6 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             event = realEvent;
         return event;
     }
-
-
 
     @Nonnull
     @Override
@@ -81,21 +74,28 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setDescription(@NotNull String description)
     {
-        return null;
+        Checks.notLonger(description, 1000, "Description");
+        this.description = description;
+        set |= DESCRIPTION;
+        return this;
     }
 
     @NotNull
     @Override
     public GuildScheduledEventManager setLocation(@NotNull StageChannel stageChannel)
     {
-        return null;
+        this.location = stageChannel;
+        set |= LOCATION;
+        return this;
     }
 
     @NotNull
     @Override
     public GuildScheduledEventManager setLocation(@NotNull VoiceChannel voiceChannel)
     {
-        return null;
+        this.location = voiceChannel;
+        set |= LOCATION;
+        return this;
     }
 
     @NotNull
@@ -109,14 +109,18 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setStartTime(@NotNull OffsetDateTime startTime)
     {
-        return null;
+        this.startTime = startTime;
+        set |= START_TIME;
+        return this;
     }
 
     @NotNull
     @Override
     public GuildScheduledEventManager setEndTime(@Nullable OffsetDateTime endTime)
     {
-        return null;
+        this.endTime = endTime;
+        set |= END_TIME;
+        return this;
     }
 
     @NotNull
@@ -134,7 +138,12 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             object.put("name", name);
         if (shouldUpdate(DESCRIPTION))
             object.put("description", description);
-
+        if (shouldUpdate(LOCATION))
+            object.put("channel_id", location.getIdLong());
+        if (shouldUpdate(START_TIME))
+            object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
+        if (shouldUpdate(END_TIME))
+            object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
         return getRequestBody(object);
     }
 }
