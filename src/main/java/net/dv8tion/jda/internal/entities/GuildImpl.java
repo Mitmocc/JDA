@@ -499,8 +499,7 @@ public class GuildImpl implements Guild
 
     @CheckReturnValue
     @Nonnull
-    @Override
-    public AuditableRestAction<GuildScheduledEvent> createScheduledEvent(String name, String description, OffsetDateTime startTime, OffsetDateTime endTime, long channelId)
+    public AuditableRestAction<GuildScheduledEvent> sss(String name, String description, OffsetDateTime startTime, OffsetDateTime endTime, long channelId)
     {
         checkPermission(Permission.MANAGE_EVENTS);
         DataObject body = DataObject.empty();
@@ -520,6 +519,14 @@ public class GuildImpl implements Guild
             DataObject obj = response.getObject();
             return jda.getEntityBuilder().createGuildScheduledEvent(this, obj, getIdLong());
         });
+    }
+
+    @Nonnull
+    @Override
+    public GuildScheduledEventAction createScheduledEvent()
+    {
+        checkPermission(Permission.MANAGE_EVENTS);
+        return new GuildScheduledEventActionImpl(this);
     }
 
     @Override

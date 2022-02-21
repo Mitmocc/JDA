@@ -117,7 +117,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setName(@Nonnull String name);
+    GuildScheduledEventAction setName(@Nonnull String name);
 
     /**
      * Sets the description for the new {@link GuildScheduledEvent GuildScheduledEvent}.
@@ -135,7 +135,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setDescription(@Nonnull String description);
+    GuildScheduledEventAction setDescription(@Nonnull String description);
 
     /**
      * Sets the location for the new {@link GuildScheduledEvent} to take place in a specified stage channel.
@@ -163,7 +163,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setLocation(@Nonnull StageChannel stageChannel);
+    GuildScheduledEventAction setLocation(@Nonnull StageChannel stageChannel);
 
     /**
      * Sets the location for the new {@link GuildScheduledEvent} to take place in a specified voice channel. This will
@@ -190,7 +190,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setLocation(@Nonnull VoiceChannel voiceChannel);
+    GuildScheduledEventAction setLocation(@Nonnull VoiceChannel voiceChannel);
 
     /**
      * Sets the location for the new {@link GuildScheduledEvent} to take place "externally",
@@ -222,7 +222,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setLocation(@Nonnull String externalLocation);
+    GuildScheduledEventAction setLocation(@Nonnull String externalLocation);
 
     /**
      * <p>Sets the time that the new {@link GuildScheduledEvent} should start at.
@@ -244,7 +244,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setStartTime(@Nonnull OffsetDateTime startTime);
+    GuildScheduledEventAction setStartTime(@Nonnull OffsetDateTime startTime);
 
     /**
      * Sets the time that the new {@link GuildScheduledEvent} should end at.
@@ -272,5 +272,5 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setEndTime(@Nullable OffsetDateTime endTime);
+    GuildScheduledEventAction setEndTime(@Nullable OffsetDateTime endTime);
 }
