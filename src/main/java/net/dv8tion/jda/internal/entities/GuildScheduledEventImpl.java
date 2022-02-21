@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -35,6 +36,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     private User creator;
     private long creatorId;
     private int interestedUserCount;
+    private GuildScheduledEventManager manager;
 
     // Only one of these should not be null at any given time, else the event's Type will be UNKNOWN
     private String externalLocation;
@@ -167,8 +169,9 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Override
     public GuildScheduledEventManager getManager()
     {
-        // Todo: Implement
-        return null;
+        if (manager == null)
+        //    return manager = new GuildScheduledEventManagerImpl(this);
+        return manager;
     }
 
     public GuildScheduledEventImpl setName(String name)
