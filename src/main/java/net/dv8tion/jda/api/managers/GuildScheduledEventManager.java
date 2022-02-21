@@ -47,7 +47,7 @@ import java.time.OffsetDateTime;
 public interface GuildScheduledEventManager extends Manager<GuildScheduledEventManager>
 {
     /** Used to reset the name field */
-    long NAME         = 1 << 0;
+    long NAME         = 1;
     /** Used to reset the description field */
     long DESCRIPTION  = 1 << 1;
     /** Used to reset the location field */

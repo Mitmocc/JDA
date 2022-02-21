@@ -489,14 +489,14 @@ public class GuildImpl implements Guild
     @Override
     public GuildScheduledEvent getScheduledEventById(long id)
     {
-        // TODO: Implement
-        return null;
+
+        return getScheduledEventById(id);
     }
     @Override
     @Nonnull
     public List<GuildScheduledEvent> getScheduledEvents()
     {
-        System.out.println("getSchuledEvents");
+
         return Collections.unmodifiableList(
                 getScheduledEventsView().stream()
                         .filter(Objects::nonNull)
@@ -2038,7 +2038,6 @@ public class GuildImpl implements Guild
     {
         return scheduledEventCache;
     }
-
 
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
     {
