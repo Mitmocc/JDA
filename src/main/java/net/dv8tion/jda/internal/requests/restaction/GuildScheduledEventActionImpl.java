@@ -164,9 +164,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     protected RequestBody finalizeData()
     {
-        if (name == null) {
-            throw new ParsingException(Helpers.format("Missing required field: name"));
-        }
+
         DataObject object = DataObject.empty();
         object.put("entity_type", entityType);
         object.put("privacy_level", 2);
@@ -190,6 +188,9 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     protected void handleSuccess(Response response, Request<GuildScheduledEvent> request)
     {
+        if (name == null) {
+            throw new IllegalArgumentException(Helpers.format("Missing required parameter: name"));
+        }
         request.onSuccess(api.getEntityBuilder().createGuildScheduledEvent((GuildImpl) guild, response.getObject(), guild.getIdLong()));
     }
 }
