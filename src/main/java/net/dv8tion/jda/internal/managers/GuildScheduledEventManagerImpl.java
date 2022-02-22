@@ -40,6 +40,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     protected Icon image;
     protected OffsetDateTime startTime, endTime;
     protected int entityType;
+    protected GuildScheduledEvent.Status status;
 
     public GuildScheduledEventManagerImpl(GuildScheduledEvent event)
     {
@@ -144,7 +145,9 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setStatus(@NotNull GuildScheduledEvent.Status status)
     {
-        return null;
+        this.status = status;
+        set |= STATUS;
+        return this;
     }
 
     @Override
@@ -167,6 +170,8 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(IMAGE))
             object.put("image", image.getEncoding());
+        if (shouldUpdate(STATUS))
+            object.put("status", status.getKey());
         return getRequestBody(object);
     }
 }

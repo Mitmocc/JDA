@@ -81,11 +81,9 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Override
     public RestAction<User> retrieveCreator()
     {
-        // Todo: Implement
-        return null;
+        return getJDA().retrieveUserById(getCreatorIdLong());
     }
 
-    @Nonnull
     @Override
     public long getCreatorIdLong()
     {

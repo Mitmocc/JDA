@@ -63,9 +63,9 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     String getDescription();
 
     /**
-     * The cover image of the event.
-     *
-     * @return The image, or {@code null} if none is specified
+     * The cover image url of the event.
+     * <p>Links to a potentially heavily compressed image. You can append a size parameter to the URL if needed. Example: ?size=4096 </p>
+     * @return The image url, or {@code null} if none is specified
      */
     @Nullable
     String getImageUrl();

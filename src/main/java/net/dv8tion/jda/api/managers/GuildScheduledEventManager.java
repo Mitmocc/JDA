@@ -56,6 +56,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     long END_TIME     = 1 << 4;
     /** Used to reset the image field */
     long IMAGE        = 1 << 5;
+    /** Used to reset the image field */
+    long STATUS        = 1 << 6;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -70,6 +72,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *     <li>{@link #START_TIME}</li>
      *     <li>{@link #END_TIME}</li>
      *     <li>{@link #IMAGE}</li>
+     *     <li>{@link #STATUS}</li>
      * </ul>
      *
      * @param  fields
@@ -93,7 +96,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *     <li>{@link #LOCATION}</li>
      *     <li>{@link #START_TIME}</li>
      *     <li>{@link #END_TIME}</li>
-     *     <li>{@link #END_TIME}</li>
+     *     <li>{@link #IMAGE}</li>
+     *     <li>{@link #STATUS}</li>
      * </ul>
      *
      * @param  fields

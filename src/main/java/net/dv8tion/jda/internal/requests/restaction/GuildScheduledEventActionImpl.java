@@ -159,7 +159,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         return this;
     }
 
-
     @Override
     protected RequestBody finalizeData()
     {
@@ -180,7 +179,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (image != null)
             object.put("image", image.getEncoding());
-
         return getRequestBody(object);
     }
 
