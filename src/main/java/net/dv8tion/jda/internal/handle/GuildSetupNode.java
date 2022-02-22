@@ -193,7 +193,6 @@ public class GuildSetupNode
         if (partialGuild == null)
         {
             partialGuild = obj;
-            System.out.println(partialGuild);
         }
         else
         {
