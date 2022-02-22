@@ -484,8 +484,8 @@ public class GuildImpl implements Guild
     public @NotNull RestAction<GuildScheduledEvent> retrieveScheduledEventById(String id)
     {
         Checks.isSnowflake(id);
-        Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
-        return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createGuildScheduledEvent(this, response.getObject(), this.getIdLong()));
+        Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getId(), id);
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createGuildScheduledEvent(this, response.getObject(), getIdLong()));
     }
 
     @Nonnull
