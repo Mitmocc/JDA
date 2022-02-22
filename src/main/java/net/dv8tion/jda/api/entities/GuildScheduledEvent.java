@@ -43,6 +43,9 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      */
     int MAX_DESCRIPTION_LENGTH = 1000;
 
+    /** Template for {@link #getImageUrl()} */
+    String IMAGE_URL = "https://cdn.discordapp.com/guild-events/%s/%s.%s";
+
     /**
      * The name of the event.
      *
@@ -65,7 +68,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * @return The image, or {@code null} if none is specified
      */
     @Nullable
-    Icon getImage();
+    String getImageUrl();
 
     /**
      * The user who originally created the event.

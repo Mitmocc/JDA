@@ -926,15 +926,14 @@ public class EntityBuilder
                 guildScheduledEventView.getMap().put(id, guildScheduledEvent);
             }
         }
-        System.out.println("-----");
-        System.out.println(json);
 
         guildScheduledEvent.setName(json.getString("name"))
                 .setDescription(json.getString("description", null))
                 .setStatus(GuildScheduledEvent.Status.fromKey(json.getInt("status", -1)))
                 .setInterestedUserCount(json.getInt("user_count", -1))
                 .setStartTime(json.getOffsetDateTime("scheduled_start_time"))
-                .setEndTime(json.getOffsetDateTime("scheduled_end_time", null));
+                .setEndTime(json.getOffsetDateTime("scheduled_end_time", null))
+                .setImage(json.getString("image"));
 
         final long creatorId = json.getLong("creator_id", -1);
         guildScheduledEvent.setCreatorId(creatorId);

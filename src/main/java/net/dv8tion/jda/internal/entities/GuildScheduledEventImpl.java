@@ -32,7 +32,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
 
     private String name, description;
     private OffsetDateTime startTime, endTime;
-    private Icon image;
+    private String image;
     private Status status;
     private User creator;
     private long creatorId;
@@ -65,9 +65,9 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
 
     @Nullable
     @Override
-    public Icon getImage()
+    public String getImageUrl()
     {
-        return image;
+        return image == null ? null : String.format(IMAGE_URL, getId(), image, image.startsWith("a_") ? "gif" : "png");
     }
 
     @Nullable
@@ -194,9 +194,9 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
         return this;
     }
 
-    public GuildScheduledEventImpl setImage(Icon icon)
+    public GuildScheduledEventImpl setImage(String image)
     {
-        this.image = icon;
+        this.image = image;
         return this;
     }
 
