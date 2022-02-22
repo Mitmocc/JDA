@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.managers.GuildScheduledEventManagerImpl;
-import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -33,6 +32,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
 
     private String name, description;
     private OffsetDateTime startTime, endTime;
+    private Icon image;
     private Status status;
     private User creator;
     private long creatorId;
@@ -61,6 +61,13 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     public String getDescription()
     {
         return description;
+    }
+
+    @Nullable
+    @Override
+    public Icon getImage()
+    {
+        return image;
     }
 
     @Nullable
@@ -184,6 +191,12 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     public GuildScheduledEventImpl setDescription(String description)
     {
         this.description = description;
+        return this;
+    }
+
+    public GuildScheduledEventImpl setImage(Icon icon)
+    {
+        this.image = icon;
         return this;
     }
 

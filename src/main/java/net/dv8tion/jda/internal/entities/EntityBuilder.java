@@ -910,10 +910,6 @@ public class EntityBuilder
                 .setAvailable(json.getBoolean("available", true));
     }
 
-    public GuildScheduledEvent createGuildScheduledEvent(long guildId, DataObject json)
-    {
-        return createGuildScheduledEvent(null, json, guildId);
-    }
     public GuildScheduledEvent createGuildScheduledEvent(GuildImpl guild, DataObject json, long guildId)
     {
 
@@ -936,6 +932,7 @@ public class EntityBuilder
                 .setInterestedUserCount(json.getInt("user_count", -1))
                 .setStartTime(json.getOffsetDateTime("scheduled_start_time"))
                 .setEndTime(json.getOffsetDateTime("scheduled_end_time", null));
+
         final long creatorId = json.getLong("creator_id", -1);
         guildScheduledEvent.setCreatorId(creatorId);
         if (creatorId != -1)

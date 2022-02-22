@@ -15,10 +15,7 @@
  */
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
-import net.dv8tion.jda.api.entities.StageChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 
 import javax.annotation.CheckReturnValue;
@@ -136,6 +133,19 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
     @Nonnull
     @CheckReturnValue
     GuildScheduledEventAction setDescription(@Nonnull String description);
+
+    /**
+     * Sets the cover image for the new {@link GuildScheduledEvent GuildScheduledEvent}.
+     *
+     * @param  image
+     *         The cover image for the new {@link GuildScheduledEvent GuildScheduledEvent},
+     *         or {@code null} for no cover image.
+     *
+     * @return The current GuildScheduledEventAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildScheduledEventAction setImage(@Nonnull Icon icon);
 
     /**
      * Sets the location for the new {@link GuildScheduledEvent} to take place in a specified stage channel.

@@ -39,6 +39,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 {
     protected final Guild guild;
     protected String name, description;
+    protected Icon image;
     protected long channelId;
     protected String location;
     protected OffsetDateTime startTime, endTime;
@@ -109,6 +110,14 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
     @NotNull
     @Override
+    public GuildScheduledEventAction setImage(@NotNull Icon icon)
+    {
+        this.image = icon;
+        return this;
+    }
+
+    @NotNull
+    @Override
     public GuildScheduledEventAction setLocation(@NotNull StageChannel stageChannel)
     {
         this.channelId = stageChannel.getIdLong();
@@ -169,6 +178,9 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (endTime != null)
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
+        if (image != null)
+            object.put("image", image.getEncoding());
+
         return getRequestBody(object);
     }
 

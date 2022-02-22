@@ -60,6 +60,14 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     String getDescription();
 
     /**
+     * The cover image of the event.
+     *
+     * @return The image, or {@code null} if none is specified
+     */
+    @Nullable
+    Icon getImage();
+
+    /**
      * The user who originally created the event.
      * <p> A {@code null} may be returned if user has deleted their account, the {@link User} object has not yet been cached
      * (lazy-loading) or if the event was created before Discord started keeping track of event creators on October 21st, 2021. {@link #hasCreator()} may be used to check if the

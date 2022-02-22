@@ -37,6 +37,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     protected String name, description;
     protected long channelId;
     protected String location;
+    protected Icon image;
     protected OffsetDateTime startTime, endTime;
     protected int entityType;
 
@@ -79,6 +80,15 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         Checks.notLonger(description, 1000, "Description");
         this.description = description;
         set |= DESCRIPTION;
+        return this;
+    }
+
+    @NotNull
+    @Override
+    public GuildScheduledEventManager setImage(@NotNull Icon icon)
+    {
+        this.image = icon;
+        set |= IMAGE;
         return this;
     }
 
@@ -155,6 +165,8 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(END_TIME))
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
+        if (shouldUpdate(IMAGE))
+            object.put("image", image.getEncoding());
         return getRequestBody(object);
     }
 }

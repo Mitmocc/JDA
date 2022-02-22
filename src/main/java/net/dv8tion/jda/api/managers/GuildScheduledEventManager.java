@@ -15,10 +15,8 @@
  */
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
-import net.dv8tion.jda.api.entities.StageChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.restaction.GuildScheduledEventAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -56,6 +54,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     long START_TIME   = 1 << 3;
     /** Used to reset the end time field */
     long END_TIME     = 1 << 4;
+    /** Used to reset the image field */
+    long IMAGE        = 1 << 5;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -69,6 +69,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *     <li>{@link #LOCATION}</li>
      *     <li>{@link #START_TIME}</li>
      *     <li>{@link #END_TIME}</li>
+     *     <li>{@link #IMAGE}</li>
      * </ul>
      *
      * @param  fields
@@ -91,6 +92,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *     <li>{@link #DESCRIPTION}</li>
      *     <li>{@link #LOCATION}</li>
      *     <li>{@link #START_TIME}</li>
+     *     <li>{@link #END_TIME}</li>
      *     <li>{@link #END_TIME}</li>
      * </ul>
      *
@@ -154,6 +156,19 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     @Nonnull
     @CheckReturnValue
     GuildScheduledEventManager setDescription(@Nonnull String description);
+
+    /**
+     * Sets the cover image for the new {@link GuildScheduledEvent GuildScheduledEvent}.
+     *
+     * @param  image
+     *         The cover image for the new {@link GuildScheduledEvent GuildScheduledEvent},
+     *         or {@code null} for no cover image.
+     *
+     * @return The current GuildScheduledEventAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildScheduledEventManager setImage(@Nonnull Icon icon);
 
     /**
      * Sets the location of the selected {@link GuildScheduledEvent} to take place in a specified stage channel.
