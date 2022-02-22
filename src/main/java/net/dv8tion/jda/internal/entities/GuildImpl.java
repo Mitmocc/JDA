@@ -498,10 +498,10 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public GuildScheduledEventAction createScheduledEvent(String name, OffsetDateTime startTime, OffsetDateTime endTime)
+    public GuildScheduledEventAction createScheduledEvent(String name, OffsetDateTime startTime)
     {
         checkPermission(Permission.MANAGE_EVENTS);
-        return new GuildScheduledEventActionImpl(this).setName(name).setStartTime(startTime).setEndTime(endTime);
+        return new GuildScheduledEventActionImpl(this).setName(name).setStartTime(startTime);
     }
 
     @Override
