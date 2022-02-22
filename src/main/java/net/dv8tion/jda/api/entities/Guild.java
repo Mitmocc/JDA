@@ -5512,7 +5512,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventAction createScheduledEvent();
+    GuildScheduledEventAction createScheduledEvent(String name, OffsetDateTime startTime, OffsetDateTime endTime);
 
 
     /**
