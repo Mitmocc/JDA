@@ -80,7 +80,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         return (GuildScheduledEventActionImpl) super.deadline(timestamp);
     }
 
-
     @Nonnull
     @Override
     public Guild getGuild()
@@ -170,6 +169,8 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         object.put("privacy_level", 2);
         if (name != null)
             object.put("name", name);
+        else
+            throw new IllegalArgumentException("Missing required parameter: Name");
         if (description != null)
             object.put("description", description);
         if (entityType == 1 || entityType == 2)
@@ -178,6 +179,8 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
             object.put("entity_metadata", DataObject.empty().put("location", location));
         if (startTime != null)
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
+        else
+            throw new IllegalArgumentException("Missing required parameter: Start Time");
         if (endTime != null)
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (image != null)
@@ -188,9 +191,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     protected void handleSuccess(Response response, Request<GuildScheduledEvent> request)
     {
-        if (name == null) {
-            throw new IllegalArgumentException(Helpers.format("Missing required parameter: name"));
-        }
         request.onSuccess(api.getEntityBuilder().createGuildScheduledEvent((GuildImpl) guild, response.getObject(), guild.getIdLong()));
     }
 }
