@@ -43,7 +43,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     protected long channelId;
     protected String location;
     protected OffsetDateTime startTime, endTime;
-    protected int entityType = 3;
+    protected int entityType;
 
     /**
      * Creates a new GuildScheduledEventAction instance

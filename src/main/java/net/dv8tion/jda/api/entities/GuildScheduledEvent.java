@@ -19,6 +19,7 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -226,6 +227,31 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      */
     @Nullable
     String getExternalLocation();
+
+    /**
+     * Deletes this Guild Scheduled Event.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT}
+     *     <br>If the the event was already deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The send request was attempted after the account lost
+     *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS} in the guild.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we were removed from the Guild</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS MANAGE_EVENTS}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Void> delete();
 
     // TODO: Add a PagintationAction to retrieve users currently interested in the scheduled event
     /**
