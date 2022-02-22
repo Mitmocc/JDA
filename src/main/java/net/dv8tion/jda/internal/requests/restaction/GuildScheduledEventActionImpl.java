@@ -46,7 +46,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     protected int entityType = 3;
 
     /**
-     * Creates a new RoleAction instance
+     * Creates a new GuildScheduledEventAction instance
      *
      * @param  guild
      *         The {@link Guild Guild} for which the Scheduled Event should be created.

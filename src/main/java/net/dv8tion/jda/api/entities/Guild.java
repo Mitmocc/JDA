@@ -3218,6 +3218,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id);
+
     /**
      * Retrieves a {@link GuildScheduledEvent} by its ID.
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -3242,9 +3243,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<GuildScheduledEvent> retrieveScheduledEventById(@Nonnull String id) {
-        return retrieveScheduledEventById(MiscUtil.parseSnowflake(id));
-    }
+    RestAction<GuildScheduledEvent> retrieveScheduledEventById(String id);
 
 
     /* From GuildController */
@@ -5512,7 +5511,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventAction createScheduledEvent(String name, OffsetDateTime startTime);
+    GuildScheduledEventAction createScheduledEvent();
 
 
     /**

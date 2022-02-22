@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -59,6 +60,7 @@ import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -477,14 +479,22 @@ public class GuildImpl implements Guild
         return rulesChannel;
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    @CheckReturnValue
-    public RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id)
+    public @NotNull RestAction<GuildScheduledEvent> retrieveScheduledEventById(String id)
     {
-        // TODO: Implement
-        return null;
+        Checks.isSnowflake(id);
+        Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createGuildScheduledEvent(this, response.getObject(), this.getIdLong()));
     }
+
+    @Nonnull
+    @Override
+    public @NotNull RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id)
+    {
+        return retrieveScheduledEventById(String.valueOf(id));
+    }
+
 
     @Override
     @Nonnull
@@ -498,10 +508,10 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public GuildScheduledEventAction createScheduledEvent(String name, OffsetDateTime startTime)
+    public GuildScheduledEventAction createScheduledEvent()
     {
         checkPermission(Permission.MANAGE_EVENTS);
-        return new GuildScheduledEventActionImpl(this).setName(name).setStartTime(startTime);
+        return new GuildScheduledEventActionImpl(this);
     }
 
     @Override
