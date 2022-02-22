@@ -163,28 +163,38 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     protected RequestBody finalizeData()
     {
-
         DataObject object = DataObject.empty();
         object.put("entity_type", entityType);
         object.put("privacy_level", 2);
+
         if (name != null)
             object.put("name", name);
         else
             throw new IllegalArgumentException("Missing required parameter: Name");
-        if (description != null)
-            object.put("description", description);
-        if (entityType == 1 || entityType == 2)
-            object.put("channel_id", channelId);
-        if (entityType == 3)
-            object.put("entity_metadata", DataObject.empty().put("location", location));
+
         if (startTime != null)
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
         else
             throw new IllegalArgumentException("Missing required parameter: Start Time");
-        if (endTime != null)
-            object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
+
+        if (description != null)
+            object.put("description", description);
+        if (entityType == 1 || entityType == 2)
+            object.put("channel_id", channelId);
+        else if (entityType == 3)
+        {
+            object.put("entity_metadata", DataObject.empty().put("location", location));
+            if (endTime != null)
+                object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
+            else
+                throw new IllegalArgumentException("Missing required parameter: End Time");
+        }
+        else
+            throw new IllegalArgumentException("Missing required parameter: Location");
+
         if (image != null)
             object.put("image", image.getEncoding());
+
         return getRequestBody(object);
     }
 
