@@ -208,27 +208,29 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         if (shouldUpdate(DESCRIPTION))
             object.put("description", description);
         if (shouldUpdate(LOCATION))
+        {
             if (getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.SCHEDULED)
                 throw new IllegalArgumentException("Cannot update the location for a non-scheduled event.");
 
-        object.put("entity_type", entityType);
-        if (this.entityType == 1 || this.entityType == 2)
-            object.put("channel_id", channelId);
-        else if (this.entityType == 3)
-        {
+            object.put("entity_type", entityType);
+            if (this.entityType == 1 || this.entityType == 2)
+                object.put("channel_id", channelId);
+            else if (this.entityType == 3)
+            {
 
-            if (location != null && location.length() > 0)
-            {
-                object.put("entity_metadata", DataObject.empty().put("location", location));
-                object.put("channel_id", null);
-                if (endTime == null && getGuildScheduledEvent().getEndTime() == null)
+                if (location != null && location.length() > 0)
                 {
-                    throw new IllegalArgumentException("Missing required parameter: End Time");
+                    object.put("entity_metadata", DataObject.empty().put("location", location));
+                    object.put("channel_id", null);
+                    if (endTime == null && getGuildScheduledEvent().getEndTime() == null)
+                    {
+                        throw new IllegalArgumentException("Missing required parameter: End Time");
+                    }
                 }
-            }
-            else
-            {
-                throw new IllegalArgumentException("Missing required parameter: Location");
+                else
+                {
+                    throw new IllegalArgumentException("Missing required parameter: Location");
+                }
             }
         }
         if (shouldUpdate(START_TIME))
