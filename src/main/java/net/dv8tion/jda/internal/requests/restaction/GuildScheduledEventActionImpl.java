@@ -179,13 +179,15 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
         if (entityType == 1 || entityType == 2)
             object.put("channel_id", channelId);
-        else if (entityType == 3)
+        else if (entityType == 3 && location != null && location.length() > 0)
         {
-            object.put("entity_metadata", DataObject.empty().put("location", location));
-            if (endTime != null)
-                object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
-            else
+            if (endTime == null)
+            {
                 throw new IllegalArgumentException("Missing required parameter: End Time");
+            }
+            object.put("entity_metadata", DataObject.empty().put("location", location));
+            object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
+
         }
         else
             throw new IllegalArgumentException("Missing required parameter: Location");
