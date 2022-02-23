@@ -153,7 +153,8 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     protected RequestBody finalizeData()
     {
-        DataObject object = DataObject.empty().put("name", getGuildScheduledEvent().getName());
+        DataObject object = DataObject.empty();
+        object.put("entity_type", entityType);
         if (shouldUpdate(NAME))
             object.put("name", name);
         if (shouldUpdate(DESCRIPTION))
@@ -164,17 +165,14 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
                 object.put("channel_id", channelId);
              else if (this.entityType == 3)
             {
-                System.out.println("1");
                 if (location != null && location.length() > 0)
                 {
-                    System.out.println("2");
                     object.put("entity_metadata", DataObject.empty().put("location", location));
                     if (endTime == null && getGuildScheduledEvent().getEndTime() == null)
                     {
                         throw new IllegalArgumentException("Missing required parameter: End Time");
                     }
                 } else {
-                    System.out.println("3");
                     throw new IllegalArgumentException("Missing required parameter: Location");
                 }
             }
