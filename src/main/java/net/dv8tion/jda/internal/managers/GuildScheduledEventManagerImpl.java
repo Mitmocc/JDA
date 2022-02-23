@@ -249,24 +249,31 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
                     throw new IllegalArgumentException("Missing required parameter: End Time");
             }
         }
+
         if (shouldUpdate(START_TIME))
+        {
             if (getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.SCHEDULED)
                 throw new IllegalArgumentException("Cannot update start time of non-scheduled event!");
+
             if (this.endTime != null || getGuildScheduledEvent().getEndTime() != null)
+            {
                 if ((this.endTime == null ? getGuildScheduledEvent().getEndTime() : this.endTime).isBefore(startTime))
                     throw new IllegalArgumentException("Cannot schedule event to end before starting!");
+            }
+        }
 
         if (shouldUpdate(END_TIME))
+        {
             if ((this.startTime == null ? getGuildScheduledEvent().getStartTime() : this.startTime).isAfter(endTime))
                 throw new IllegalArgumentException("Cannot schedule event to end before starting!");
+        }
 
         if (shouldUpdate(STATUS))
-            Checks.check(this.status != GuildScheduledEvent.Status.UNKNOWN,
-                "Cannot set the event status to an unknown status!");
-
+        {
+            Checks.check(this.status != GuildScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
             if (this.status == GuildScheduledEvent.Status.SCHEDULED && getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.ACTIVE)
                 throw new IllegalArgumentException("Cannot perform status update!");
-
+        }
     }
 
 }
