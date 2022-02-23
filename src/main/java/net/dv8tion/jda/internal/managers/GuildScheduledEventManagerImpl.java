@@ -208,24 +208,29 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         if (shouldUpdate(DESCRIPTION))
             object.put("description", description);
         if (shouldUpdate(LOCATION))
-            object.put("entity_type", entityType);
-            if (this.entityType == 1 || this.entityType == 2)
-                object.put("channel_id", channelId);
-             else if (this.entityType == 3)
-            {
+            if (getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.SCHEDULED)
+                throw new IllegalArgumentException("Cannot update the location for a non-scheduled event.");
 
-                if (location != null && location.length() > 0)
+        object.put("entity_type", entityType);
+        if (this.entityType == 1 || this.entityType == 2)
+            object.put("channel_id", channelId);
+        else if (this.entityType == 3)
+        {
+
+            if (location != null && location.length() > 0)
+            {
+                object.put("entity_metadata", DataObject.empty().put("location", location));
+                object.put("channel_id", null);
+                if (endTime == null && getGuildScheduledEvent().getEndTime() == null)
                 {
-                    object.put("entity_metadata", DataObject.empty().put("location", location));
-                    object.put("channel_id", null);
-                    if (endTime == null && getGuildScheduledEvent().getEndTime() == null)
-                    {
-                        throw new IllegalArgumentException("Missing required parameter: End Time");
-                    }
-                } else {
-                    throw new IllegalArgumentException("Missing required parameter: Location");
+                    throw new IllegalArgumentException("Missing required parameter: End Time");
                 }
             }
+            else
+            {
+                throw new IllegalArgumentException("Missing required parameter: Location");
+            }
+        }
         if (shouldUpdate(START_TIME))
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(END_TIME))
