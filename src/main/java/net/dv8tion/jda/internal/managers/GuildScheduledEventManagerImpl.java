@@ -63,6 +63,55 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Nonnull
     @Override
     @CheckReturnValue
+    public GuildScheduledEventManagerImpl reset(long fields)
+    {
+        super.reset(fields);
+        if ((fields & NAME) == NAME)
+            this.name = null;
+        if ((fields & DESCRIPTION) == DESCRIPTION)
+            this.description = null;
+        if ((fields & LOCATION) == LOCATION)
+            this.location = null;
+        if ((fields & START_TIME) == START_TIME)
+            this.startTime = null;
+        if ((fields & END_TIME) == END_TIME)
+            this.endTime = null;
+        if ((fields & IMAGE) == IMAGE)
+            this.image = null;
+        if ((fields & STATUS) == STATUS)
+            this.status = null;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public GuildScheduledEventManagerImpl reset(long... fields)
+    {
+        super.reset(fields);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public GuildScheduledEventManagerImpl reset()
+    {
+        super.reset();
+        this.name = null;
+        this.description = null;
+        this.location = null;
+        this.startTime = null;
+        this.endTime = null;
+        this.image = null;
+        this.status = null;
+        return this;
+    }
+
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
     public GuildScheduledEventManagerImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
@@ -185,6 +234,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             object.put("image", image.getEncoding());
         if (shouldUpdate(STATUS))
             object.put("status", status.getKey());
+        reset();
         return getRequestBody(object);
     }
 }
