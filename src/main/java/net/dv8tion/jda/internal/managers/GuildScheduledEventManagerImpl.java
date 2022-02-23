@@ -232,8 +232,12 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             }
         }
         if (shouldUpdate(START_TIME))
+            
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(END_TIME))
+            if ((this.startTime == null ? getGuildScheduledEvent().getStartTime() : this.startTime).isAfter(endTime)) {
+                throw new IllegalArgumentException("Cannot schedule event to end before starting.");
+            }
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(IMAGE))
             object.put("image", image.getEncoding());
