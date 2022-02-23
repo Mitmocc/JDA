@@ -154,7 +154,6 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     protected RequestBody finalizeData()
     {
         DataObject object = DataObject.empty();
-        object.put("entity_type", entityType);
         if (shouldUpdate(NAME))
             object.put("name", name);
         if (shouldUpdate(DESCRIPTION))
