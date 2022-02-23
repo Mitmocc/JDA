@@ -163,7 +163,18 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             if (this.entityType == 1 || this.entityType == 2)
                 object.put("channel_id", channelId);
              else if (this.entityType == 3)
-                object.put("entity_metadata", DataObject.empty().put("location", location));
+            {
+                if (location != null && location.length() > 0)
+                {
+                    object.put("entity_metadata", DataObject.empty().put("location", location));
+                    if (endTime == null && getGuildScheduledEvent().getEndTime() == null)
+                    {
+                        throw new IllegalArgumentException("Missing required parameter: End Time");
+                    }
+                } else {
+                    throw new IllegalArgumentException("Missing required parameter: Location");
+                }
+            }
         if (shouldUpdate(START_TIME))
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(END_TIME))

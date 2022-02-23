@@ -177,8 +177,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         else
             throw new IllegalArgumentException("Missing required parameter: Start Time");
 
-        if (description != null)
-            object.put("description", description);
         if (entityType == 1 || entityType == 2)
             object.put("channel_id", channelId);
         else if (entityType == 3)
@@ -192,6 +190,8 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         else
             throw new IllegalArgumentException("Missing required parameter: Location");
 
+        if (description != null)
+            object.put("description", description);
         if (image != null)
             object.put("image", image.getEncoding());
 
