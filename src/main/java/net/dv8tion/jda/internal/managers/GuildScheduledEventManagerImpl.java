@@ -239,7 +239,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         if (shouldUpdate(LOCATION))
         {
             if (getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.SCHEDULED)
-                throw new IllegalArgumentException("Cannot update the location for a non-scheduled event.");
+                throw new IllegalArgumentException("Cannot update location of non-scheduled event.");
             if (this.entityType == 3)
             {
                 if (location == null || location.length() == 0)
@@ -249,6 +249,8 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             }
         }
         if (shouldUpdate(START_TIME))
+            if (getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.SCHEDULED)
+                throw new IllegalArgumentException("Cannot update start time of non-scheduled event.");
             if (this.endTime != null || getGuildScheduledEvent().getEndTime() != null)
                 if ((this.endTime == null ? getGuildScheduledEvent().getEndTime() : this.endTime).isBefore(startTime))
                     throw new IllegalArgumentException("Cannot schedule event to end before starting.");
@@ -256,6 +258,10 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         if (shouldUpdate(END_TIME))
             if ((this.startTime == null ? getGuildScheduledEvent().getStartTime() : this.startTime).isAfter(endTime))
                 throw new IllegalArgumentException("Cannot schedule event to end before starting.");
+
+        if (shouldUpdate(STATUS))
+            if (this.status == GuildScheduledEvent.Status.SCHEDULED && getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.ACTIVE)
+                throw new IllegalArgumentException("Cannot perform status update.");
     }
 
 }
