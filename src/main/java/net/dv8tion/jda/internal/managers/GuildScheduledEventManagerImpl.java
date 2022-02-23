@@ -202,6 +202,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     protected RequestBody finalizeData()
     {
+        checkLogic();
         DataObject object = DataObject.empty();
         if (shouldUpdate(NAME))
             object.put("name", name);
@@ -209,47 +210,49 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             object.put("description", description);
         if (shouldUpdate(LOCATION))
         {
-            if (getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.SCHEDULED)
-                throw new IllegalArgumentException("Cannot update the location for a non-scheduled event.");
-
             object.put("entity_type", entityType);
             if (this.entityType == 1 || this.entityType == 2)
                 object.put("channel_id", channelId);
             else if (this.entityType == 3)
             {
-
-                if (location != null && location.length() > 0)
-                {
-                    object.put("entity_metadata", DataObject.empty().put("location", location));
-                    object.put("channel_id", null);
-                    if (endTime == null && getGuildScheduledEvent().getEndTime() == null)
-                    {
-                        throw new IllegalArgumentException("Missing required parameter: End Time");
-                    }
-                }
-                else
-                {
-                    throw new IllegalArgumentException("Missing required parameter: Location");
-                }
+                object.put("entity_metadata", DataObject.empty().put("location", location));
+                object.put("channel_id", null);
             }
         }
         if (shouldUpdate(START_TIME))
-
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(END_TIME))
-        {
-            if ((this.startTime == null ? getGuildScheduledEvent().getStartTime() : this.startTime).isAfter(endTime))
-            {
-                throw new IllegalArgumentException("Cannot schedule event to end before starting.");
-            }
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
-        }
         if (shouldUpdate(IMAGE))
             object.put("image", image.getEncoding());
         if (shouldUpdate(STATUS))
             object.put("status", status.getKey());
         reset();
         return getRequestBody(object);
+    }
+
+    void checkLogic()
+    {
+        if (shouldUpdate(LOCATION))
+        {
+            if (getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.SCHEDULED)
+                throw new IllegalArgumentException("Cannot update the location for a non-scheduled event.");
+            if (this.entityType == 3)
+            {
+                if (location == null || location.length() == 0)
+                    throw new IllegalArgumentException("Missing required parameter: Location");
+                if (endTime == null && getGuildScheduledEvent().getEndTime() == null)
+                    throw new IllegalArgumentException("Missing required parameter: End Time");
+            }
+        }
+        if (shouldUpdate(START_TIME))
+            if (this.endTime != null || getGuildScheduledEvent().getEndTime() != null)
+                if ((this.endTime == null ? getGuildScheduledEvent().getEndTime() : this.endTime).isBefore(startTime))
+                    throw new IllegalArgumentException("Cannot schedule event to end before starting.");
+
+        if (shouldUpdate(END_TIME))
+            if ((this.startTime == null ? getGuildScheduledEvent().getStartTime() : this.startTime).isAfter(endTime))
+                throw new IllegalArgumentException("Cannot schedule event to end before starting.");
     }
 
 }
