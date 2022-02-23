@@ -165,9 +165,11 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
                 object.put("channel_id", channelId);
              else if (this.entityType == 3)
             {
+
                 if (location != null && location.length() > 0)
                 {
                     object.put("entity_metadata", DataObject.empty().put("location", location));
+                    object.put("channel_id", null);
                     if (endTime == null && getGuildScheduledEvent().getEndTime() == null)
                     {
                         throw new IllegalArgumentException("Missing required parameter: End Time");
