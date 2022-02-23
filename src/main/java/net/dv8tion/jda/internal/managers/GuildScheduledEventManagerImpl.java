@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.managers;
 
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -250,18 +251,22 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         }
         if (shouldUpdate(START_TIME))
             if (getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.SCHEDULED)
-                throw new IllegalArgumentException("Cannot update start time of non-scheduled event.");
+                throw new IllegalArgumentException("Cannot update start time of non-scheduled event!");
             if (this.endTime != null || getGuildScheduledEvent().getEndTime() != null)
                 if ((this.endTime == null ? getGuildScheduledEvent().getEndTime() : this.endTime).isBefore(startTime))
-                    throw new IllegalArgumentException("Cannot schedule event to end before starting.");
+                    throw new IllegalArgumentException("Cannot schedule event to end before starting!");
 
         if (shouldUpdate(END_TIME))
             if ((this.startTime == null ? getGuildScheduledEvent().getStartTime() : this.startTime).isAfter(endTime))
-                throw new IllegalArgumentException("Cannot schedule event to end before starting.");
+                throw new IllegalArgumentException("Cannot schedule event to end before starting!");
 
         if (shouldUpdate(STATUS))
+            Checks.check(this.status != GuildScheduledEvent.Status.UNKNOWN,
+                "Cannot set the event status to an unknown status!");
+
             if (this.status == GuildScheduledEvent.Status.SCHEDULED && getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.ACTIVE)
-                throw new IllegalArgumentException("Cannot perform status update.");
+                throw new IllegalArgumentException("Cannot perform status update!");
+
     }
 
 }
