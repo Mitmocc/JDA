@@ -16,11 +16,7 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
@@ -160,7 +156,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     protected RequestBody finalizeData()
     {
-        checkPermissions();
+        checks();
         DataObject object = DataObject.empty();
         if (shouldUpdate(NAME))
             object.put("name", name);
@@ -189,8 +185,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         return getRequestBody(object);
     }
 
-    @Override
-    protected boolean checkPermissions()
+    void checks()
     {
         if (shouldUpdate(LOCATION))
         {
@@ -213,7 +208,5 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             Checks.check(this.status != GuildScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
             Checks.check(this.status != GuildScheduledEvent.Status.SCHEDULED && getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.ACTIVE, "Cannot perform status update!");
         }
-
-        return super.checkPermissions();
     }
 }
