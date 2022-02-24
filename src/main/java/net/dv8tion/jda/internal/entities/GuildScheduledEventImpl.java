@@ -26,7 +26,6 @@ import net.dv8tion.jda.internal.managers.GuildScheduledEventManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -182,9 +181,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Override
     public GuildScheduledEventManager getManager()
     {
-        if (manager == null)
-            return manager = new GuildScheduledEventManagerImpl(this);
-        return manager;
+        return  new GuildScheduledEventManagerImpl(this);
     }
 
     @Nonnull

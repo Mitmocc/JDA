@@ -203,9 +203,6 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     {
         this.status = status;
         set |= STATUS;
-
-        Checks.check(this.status != GuildScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
-        Checks.check(this.status != GuildScheduledEvent.Status.SCHEDULED && getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.ACTIVE, "Cannot perform status update!");
         return this;
     }
 
@@ -234,6 +231,8 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(IMAGE))
             object.put("image", image.getEncoding());
+        if (shouldUpdate(STATUS))
+            object.put("status", status.getKey());
 
         reset();
         return getRequestBody(object);
