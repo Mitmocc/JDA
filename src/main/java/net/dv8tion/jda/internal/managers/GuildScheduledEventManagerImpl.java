@@ -206,7 +206,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     protected RequestBody finalizeData()
     {
-        checkLogic();
+        checks();
         DataObject object = DataObject.empty();
         if (shouldUpdate(NAME))
             object.put("name", name);
@@ -231,49 +231,33 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             object.put("image", image.getEncoding());
         if (shouldUpdate(STATUS))
             object.put("status", status.getKey());
+        
         reset();
         return getRequestBody(object);
     }
 
-    void checkLogic()
+    void checks()
     {
         if (shouldUpdate(LOCATION))
         {
-            if (getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.SCHEDULED)
-                throw new IllegalArgumentException("Cannot update location of non-scheduled event.");
-            if (this.entityType == 3)
-            {
-                if (location == null || location.length() == 0)
-                    throw new IllegalArgumentException("Missing required parameter: Location");
-                if (endTime == null && getGuildScheduledEvent().getEndTime() == null)
-                    throw new IllegalArgumentException("Missing required parameter: End Time");
-            }
+            Checks.check(getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.SCHEDULED, "Cannot update location of non-scheduled event.");
+            Checks.check(this.entityType != 3 || (location != null && location.length() != 0), "Missing required parameter: Location");
+            Checks.check(this.entityType != 3 || endTime != null || getGuildScheduledEvent().getEndTime() != null, "Missing required parameter: End Time");
         }
 
         if (shouldUpdate(START_TIME))
         {
-            if (getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.SCHEDULED)
-                throw new IllegalArgumentException("Cannot update start time of non-scheduled event!");
-
-            if (this.endTime != null || getGuildScheduledEvent().getEndTime() != null)
-            {
-                if ((this.endTime == null ? getGuildScheduledEvent().getEndTime() : this.endTime).isBefore(startTime))
-                    throw new IllegalArgumentException("Cannot schedule event to end before starting!");
-            }
+            Checks.check(getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.SCHEDULED, "Cannot update start time of non-scheduled event!");
+            Checks.check((this.endTime == null && getGuildScheduledEvent().getEndTime() == null) || (this.endTime == null ? getGuildScheduledEvent().getEndTime() : this.endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
         }
 
         if (shouldUpdate(END_TIME))
-        {
-            if ((this.startTime == null ? getGuildScheduledEvent().getStartTime() : this.startTime).isAfter(endTime))
-                throw new IllegalArgumentException("Cannot schedule event to end before starting!");
-        }
+            Checks.check((this.startTime == null ? getGuildScheduledEvent().getStartTime() : this.startTime).isBefore(endTime), "Cannot schedule event to end before starting!");
 
         if (shouldUpdate(STATUS))
         {
             Checks.check(this.status != GuildScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
-            if (this.status == GuildScheduledEvent.Status.SCHEDULED && getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.ACTIVE)
-                throw new IllegalArgumentException("Cannot perform status update!");
+            Checks.check(this.status != GuildScheduledEvent.Status.SCHEDULED && getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.ACTIVE, "Cannot perform status update!");
         }
     }
-
 }
