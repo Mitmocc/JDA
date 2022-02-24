@@ -192,6 +192,7 @@ public class EntityBuilder
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
         final Optional<DataArray> presencesArray = guildJson.optArray("presences");
         final DataArray scheduledEventsArray = guildJson.getArray("guild_scheduled_events");
+        System.out.println(scheduledEventsArray);
         final long ownerId = guildJson.getUnsignedLong("owner_id", 0L);
         final long afkChannelId = guildJson.getUnsignedLong("afk_channel_id", 0L);
         final long systemChannelId = guildJson.getUnsignedLong("system_channel_id", 0L);
