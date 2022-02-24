@@ -231,7 +231,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
             object.put("image", image.getEncoding());
         if (shouldUpdate(STATUS))
             object.put("status", status.getKey());
-        
+
         reset();
         return getRequestBody(object);
     }
