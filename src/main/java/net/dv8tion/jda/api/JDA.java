@@ -208,7 +208,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * The {@link GatewayIntent GatewayIntents} for this JDA session.
-     * 
+     *
      * @return {@link EnumSet} of active gateway intents
      */
     @Nonnull
@@ -255,7 +255,7 @@ public interface JDA extends IGuildChannelContainer
      * The time in milliseconds that discord took to respond to a REST request.
      * <br>This will request the current user from the API and calculate the time the response took.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre><code>
      * jda.getRestPing().queue( (time) {@literal ->}
      *     channel.sendMessageFormat("Ping: %d ms", time).queue()
@@ -285,7 +285,7 @@ public interface JDA extends IGuildChannelContainer
     /**
      * This method will block until JDA has reached the specified connection status.
      *
-     * <h2>Login Cycle</h2>
+     * <h4>Login Cycle</h4>
      * <ol>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZING INITIALIZING}</li>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZED INITIALIZED}</li>
@@ -321,7 +321,7 @@ public interface JDA extends IGuildChannelContainer
     /**
      * This method will block until JDA has reached the specified connection status.
      *
-     * <h2>Login Cycle</h2>
+     * <h4>Login Cycle</h4>
      * <ol>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZING INITIALIZING}</li>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZED INITIALIZED}</li>
@@ -612,7 +612,7 @@ public interface JDA extends IGuildChannelContainer
      * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
      * For testing, it is recommended to use a test guild with guild commands.
      *
-     * <h2>Examples</h2>
+     * <h4>Examples</h4>
      * <pre>{@code
      * // Set list to 2 commands
      * jda.updateCommands()
@@ -1304,6 +1304,7 @@ public interface JDA extends IGuildChannelContainer
         return getRoleCache().getElementsByName(name, ignoreCase);
     }
 
+
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} visible to this JDA session.
@@ -1312,7 +1313,6 @@ public interface JDA extends IGuildChannelContainer
      */
     @Nonnull
     SnowflakeCacheView<GuildScheduledEvent> getGuildScheduledEventCache();
-
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} of all connected
      * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
@@ -1329,7 +1329,6 @@ public interface JDA extends IGuildChannelContainer
     {
         return getGuildScheduledEventCache().asList();
     }
-
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with an id that matches the provided
@@ -1347,7 +1346,6 @@ public interface JDA extends IGuildChannelContainer
     {
         return getGuildScheduledEventCache().getElementById(id);
     }
-
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with an id that matches the provided
@@ -1363,7 +1361,6 @@ public interface JDA extends IGuildChannelContainer
     {
         return getGuildScheduledEventCache().getElementById(id);
     }
-
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} that have the same name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} with the provided name, then this returns an empty list.
@@ -1381,413 +1378,6 @@ public interface JDA extends IGuildChannelContainer
     {
         return getGuildScheduledEventCache().getElementsByName(name, ignoreCase);
     }
-
-    /**
-     * Get {@link GuildChannel GuildChannel} for the provided ID.
-     * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
-     *
-     * <br>To get more specific channel types you can use one of the following:
-     * <ul>
-     *     <li>{@link #getTextChannelById(String)}</li>
-     *     <li>{@link #getVoiceChannelById(String)}</li>
-     *     <li>{@link #getStoreChannelById(String)}</li>
-     *     <li>{@link #getCategoryById(String)}</li>
-     * </ul>
-     *
-     * @param  id
-     *         The ID of the channel
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided ID is null
-     * @throws java.lang.NumberFormatException
-     *         If the provided ID is not a snowflake
-     *
-     * @return The GuildChannel or null
-     */
-    @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull String id)
-    {
-        return getGuildChannelById(MiscUtil.parseSnowflake(id));
-    }
-
-    /**
-     * Get {@link GuildChannel GuildChannel} for the provided ID.
-     * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
-     *
-     * <br>To get more specific channel types you can use one of the following:
-     * <ul>
-     *     <li>{@link #getTextChannelById(long)}</li>
-     *     <li>{@link #getVoiceChannelById(long)}</li>
-     *     <li>{@link #getStoreChannelById(long)}</li>
-     *     <li>{@link #getCategoryById(long)}</li>
-     * </ul>
-     *
-     * @param  id
-     *         The ID of the channel
-     *
-     * @return The GuildChannel or null
-     */
-    @Nullable
-    default GuildChannel getGuildChannelById(long id)
-    {
-        //TODO-v5-unified-channel-cache
-        GuildChannel channel = getTextChannelById(id);
-        if (channel == null)
-            channel = getNewsChannelById(id);
-        if (channel == null)
-            channel = getVoiceChannelById(id);
-        if (channel == null)
-            channel = getStageChannelById(id);
-        if (channel == null)
-            channel = getStoreChannelById(id);
-        if (channel == null)
-            channel = getCategoryById(id);
-        if (channel == null)
-            channel = getThreadChannelById(id);
-
-        return channel;
-    }
-
-    /**
-     * Get {@link GuildChannel GuildChannel} for the provided ID.
-     *
-     * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
-     * profit from a simple function to get the channel instance.
-     * To get more specific channel types you can use one of the following:
-     * <ul>
-     *     <li>{@link #getTextChannelById(String)}</li>
-     *     <li>{@link #getVoiceChannelById(String)}</li>
-     *     <li>{@link #getStoreChannelById(String)}</li>
-     *     <li>{@link #getCategoryById(String)}</li>
-     * </ul>
-     *
-     * @param  type
-     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
-     * @param  id
-     *         The ID of the channel
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided ID is null
-     * @throws java.lang.NumberFormatException
-     *         If the provided ID is not a snowflake
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided {@link net.dv8tion.jda.api.entities.ChannelType} is null
-     *
-     * @return The GuildChannel or null
-     */
-    @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
-    {
-        return getGuildChannelById(type, MiscUtil.parseSnowflake(id));
-    }
-
-    /**
-     * Get {@link GuildChannel GuildChannel} for the provided ID.
-     *
-     * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
-     * profit from a simple function to get the channel instance.
-     * To get more specific channel types you can use one of the following:
-     * <ul>
-     *     <li>{@link #getTextChannelById(long)}</li>
-     *     <li>{@link #getVoiceChannelById(long)}</li>
-     *     <li>{@link #getStoreChannelById(long)}</li>
-     *     <li>{@link #getCategoryById(long)}</li>
-     * </ul>
-     *
-     * @param  type
-     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
-     * @param  id
-     *         The ID of the channel
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided {@link net.dv8tion.jda.api.entities.ChannelType} is null
-     *
-     * @return The GuildChannel or null
-     */
-    @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
-    {
-        Checks.notNull(type, "ChannelType");
-        switch (type)
-        {
-            case TEXT:
-                return getTextChannelById(id);
-            case NEWS:
-                return getNewsChannelById(id);
-            case VOICE:
-                return getVoiceChannelById(id);
-            case STAGE:
-                return getStageChannelById(id);
-            case STORE:
-                return getStoreChannelById(id);
-            case CATEGORY:
-                return getCategoryById(id);
-        }
-
-        if (type.isThread())
-            return getThreadChannelById(id);
-
-        return null;
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} visible to this JDA session.
-     *
-     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
-     */
-    @Nonnull
-    SnowflakeCacheView<StageChannel> getStageChannelCache();
-
-    /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} of all connected
-     * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
-     *
-     * <p>This copies the backing store into a list. This means every call
-     * creates a new list with O(n) complexity. It is recommended to store this into
-     * a local variable or use {@link #getStageChannelCache()} and use its more efficient
-     * versions of handling these values.
-     *
-     * @return Possible-empty list of all known {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
-     */
-    @Nonnull
-    default List<StageChannel> getStageChannels()
-    {
-        return getStageChannelCache().asList();
-    }
-
-    /**
-     * This returns the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
-     *
-     * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}.
-     * @throws java.lang.NumberFormatException
-     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with matching id.
-     */
-    @Nullable
-    default StageChannel getStageChannelById(@Nonnull String id)
-    {
-        return getStageChannelCache().getElementById(id);
-    }
-
-    /**
-     * This returns the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
-     *
-     * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with matching id.
-     */
-    @Nullable
-    default StageChannel getStageChannelById(long id)
-    {
-        return getStageChannelCache().getElementById(id);
-    }
-
-    /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} that have the same name as the one provided.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} with the provided name, then this returns an empty list.
-     *
-     * @param  name
-     *         The name of the requested {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
-     * @param  ignoreCase
-     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.StageChannel#getName()}.
-     *
-     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} that all have the
-     *         same name as the provided name.
-     */
-    @Nonnull
-    default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
-        return getStageChannelCache().getElementsByName(name, ignoreCase);
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link ThreadChannel ThreadChannels} visible to this JDA session.
-     *
-     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
-     */
-    @Nonnull
-    SnowflakeCacheView<ThreadChannel> getThreadChannelCache();
-
-    /**
-     * An unmodifiable list of all {@link ThreadChannel ThreadChannels} of all connected
-     * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
-     *
-     * <p>This copies the backing store into a list. This means every call
-     * creates a new list with O(n) complexity. It is recommended to store this into
-     * a local variable or use {@link #getThreadChannelCache()} and use its more efficient
-     * versions of handling these values.
-     *
-     * @return Possible-empty list of all known {@link ThreadChannel ThreadChannels}.
-     */
-    @Nonnull
-    default List<ThreadChannel> getThreadChannels()
-    {
-        return getThreadChannelCache().asList();
-    }
-
-    /**
-     * This returns the {@link ThreadChannel ThreadChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link ThreadChannel ThreadChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
-     *
-     * @param  id
-     *         The id of the {@link ThreadChannel ThreadChannel}.
-     * @throws java.lang.NumberFormatException
-     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
-     *
-     * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
-     */
-    @Nullable
-    default ThreadChannel getThreadChannelById(@Nonnull String id)
-    {
-        return getThreadChannelCache().getElementById(id);
-    }
-
-    /**
-     * This returns the {@link ThreadChannel ThreadChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link ThreadChannel ThreadChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
-     *
-     * @param  id
-     *         The id of the {@link ThreadChannel ThreadChannel}.
-     *
-     * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
-     */
-    @Nullable
-    default ThreadChannel getThreadChannelById(long id)
-    {
-        return getThreadChannelCache().getElementById(id);
-    }
-
-    /**
-     * An unmodifiable list of all {@link ThreadChannel ThreadChannels} that have the same name as the one provided.
-     * <br>If there are no {@link ThreadChannel ThreadChannels} with the provided name, then this returns an empty list.
-     *
-     * @param  name
-     *         The name of the requested {@link ThreadChannel ThreadChannels}.
-     * @param  ignoreCase
-     *         Whether to ignore case or not when comparing the provided name to each {@link ThreadChannel#getName()}.
-     *
-     * @return Possibly-empty list of all the {@link ThreadChannel ThreadChannels} that all have the
-     *         same name as the provided name.
-     */
-    @Nonnull
-    default List<ThreadChannel> getThreadChannelByName(@Nonnull String name, boolean ignoreCase)
-    {
-        return getThreadChannelCache().getElementsByName(name, ignoreCase);
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.Category Categories} visible to this JDA session.
-     *
-     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
-     */
-    @Nonnull
-    SnowflakeCacheView<Category> getCategoryCache();
-
-    /**
-     * Gets the {@link net.dv8tion.jda.api.entities.Category Category} that matches the provided id.
-     * <br>If there is no matching {@link net.dv8tion.jda.api.entities.Category Category} this returns {@code null}.
-     *
-     * @param  id
-     *         The snowflake ID of the wanted Category
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided ID is not a valid {@code long}
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
-     */
-    @Nullable
-    default Category getCategoryById(@Nonnull String id)
-    {
-        return getCategoryCache().getElementById(id);
-    }
-
-    /**
-     * Gets the {@link net.dv8tion.jda.api.entities.Category Category} that matches the provided id. <br>If there is no
-     * matching {@link net.dv8tion.jda.api.entities.Category Category} this returns {@code null}.
-     *
-     * @param  id
-     *         The snowflake ID of the wanted Category
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
-     */
-    @Nullable
-    default Category getCategoryById(long id)
-    {
-        return getCategoryCache().getElementById(id);
-    }
-
-    /**
-     * Gets all {@link net.dv8tion.jda.api.entities.Category Categories} visible to the currently logged in account.
-     *
-     * <p>This copies the backing store into a list. This means every call
-     * creates a new list with O(n) complexity. It is recommended to store this into
-     * a local variable or use {@link #getCategoryCache()} and use its more efficient
-     * versions of handling these values.
-     *
-     * @return An immutable list of all visible {@link net.dv8tion.jda.api.entities.Category Categories}.
-     */
-    @Nonnull
-    default List<Category> getCategories()
-    {
-        return getCategoryCache().asList();
-    }
-
-    /**
-     * Gets a list of all {@link net.dv8tion.jda.api.entities.Category Categories} that have the same name as the one
-     * provided. <br>If there are no matching categories this will return an empty list.
-     *
-     * @param  name
-     *         The name to check
-     * @param  ignoreCase
-     *         Whether to ignore case on name checking
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided name is {@code null}
-     *
-     * @return Immutable list of all categories matching the provided name
-     */
-    @Nonnull
-    default List<Category> getCategoriesByName(@Nonnull String name, boolean ignoreCase)
-    {
-        return getCategoryCache().getElementsByName(name, ignoreCase);
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} visible to this JDA session.
-     * <br>TextChannels are sorted according to their position.
-     *
-     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
-     */
-    @Nonnull
-    SnowflakeCacheView<StoreChannel> getStoreChannelCache();
-
-    /**
-     * Gets a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} that has the same id as the
-     * one provided.
-     * <br>If there is no {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
-     *
-     * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
-     *
-     * @throws java.lang.NumberFormatException
-     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
-     */
 
     @Nullable
     @Override
@@ -1864,7 +1454,7 @@ public interface JDA extends IGuildChannelContainer
      * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
      * if the user does not exist.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendMessage(JDA jda, long userId, String content) {
      *     jda.openPrivateChannelById(userId)
@@ -1892,7 +1482,7 @@ public interface JDA extends IGuildChannelContainer
      * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
      * if the user does not exist.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendMessage(JDA jda, String userId, String content) {
      *     jda.openPrivateChannelById(userId)

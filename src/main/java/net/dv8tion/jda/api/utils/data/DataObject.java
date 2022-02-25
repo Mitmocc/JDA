@@ -665,9 +665,6 @@ public class DataObject implements SerializableData
             throw valueError(key, "OffsetDateTime");
         return value;
     }
-
-
-
     /**
      * Resolves an {@link OffsetDateTime} to a key.
      * <br><b>Note:</b> This method should only be used on ISO8601 timestamps

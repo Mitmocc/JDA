@@ -15,9 +15,15 @@
  */
 package net.dv8tion.jda.internal.entities;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.internal.managers.GuildScheduledEventManagerImpl;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -31,6 +37,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
 
     private String name, description;
     private OffsetDateTime startTime, endTime;
+    private String image;
     private Status status;
     private User creator;
     private long creatorId;
@@ -62,20 +69,18 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
 
     @Nullable
     @Override
+    public String getImageUrl()
+    {
+        return image == null ? null : String.format(IMAGE_URL, getId(), image, image.startsWith("a_") ? "gif" : "png");
+    }
+
+    @Nullable
+    @Override
     public User getCreator()
     {
         return creator;
     }
 
-    @Nonnull
-    @Override
-    public RestAction<User> retrieveCreator()
-    {
-        // Todo: Implement
-        return null;
-    }
-
-    @Nonnull
     @Override
     public long getCreatorIdLong()
     {
@@ -167,8 +172,19 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Override
     public GuildScheduledEventManager getManager()
     {
-        // Todo: Implement
-        return null;
+        return  new GuildScheduledEventManagerImpl(this);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> delete()
+    {
+        Guild guild = getGuild();
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EVENTS))
+            throw new InsufficientPermissionException(guild, Permission.MANAGE_EVENTS);
+
+        Route.CompiledRoute route = Route.Guilds.DELETE_SCHEDULED_EVENT.compile(guild.getId(), getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     public GuildScheduledEventImpl setName(String name)
@@ -180,6 +196,12 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     public GuildScheduledEventImpl setDescription(String description)
     {
         this.description = description;
+        return this;
+    }
+
+    public GuildScheduledEventImpl setImage(String image)
+    {
+        this.image = image;
         return this;
     }
 

@@ -53,7 +53,6 @@ import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
 import java.time.Duration;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -189,7 +188,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
-     * <h2>Examples</h2>
+     * <h4>Examples</h4>
      * <pre>{@code
      * // Set list to 2 commands
      * guild.updateCommands()
@@ -590,7 +589,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Re-apply the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy} of this session to all {@link Member Members} of this Guild.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * // Check if the members of this guild have at least 50% bots (bot collection/farm)
      * public void checkBots(Guild guild) {
@@ -938,8 +937,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<MetaData> retrieveMetaData();
-
-
 
     /**
      * Provides the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that has been set as the channel
@@ -1369,6 +1366,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     MemberCacheView getMemberCache();
 
+
     /**
      * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link GuildScheduledEvent GuildScheduledEvents} of this Guild.
@@ -1379,7 +1377,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     SortedSnowflakeCacheView<GuildScheduledEvent> getScheduledEventCache();
-
     /**s
      * Gets a list of all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} in this Guild that have the same
      * name as the one provided.
@@ -1398,7 +1395,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
     }
-
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} from this guild that has the same id as the
      * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getGuildScheduledEventById(String)}, but it only
@@ -1419,7 +1415,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     {
         return getScheduledEventCache().getElementById(id);
     }
-
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} from this guild that has the same id as the
      * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getGuildScheduledEventById(long)}, but it only
@@ -1430,6 +1425,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
      *
+     *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with matching id.
      */
     @Nullable
@@ -1437,7 +1433,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     {
         return getScheduledEventCache().getElementById(id);
     }
-
     /**
      * Gets all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <br>The scheduled events returned will be sorted by their start times, with events starting earlier appearing first in the list. If two events are
@@ -1456,34 +1451,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
         return getScheduledEventCache().asList();
     }
 
-    /**
-     * Get {@link GuildChannel GuildChannel} for the provided ID.
-     * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
-     *
-     * <br>To get more specific channel types you can use one of the following:
-     * <ul>
-     *     <li>{@link #getTextChannelById(String)}</li>
-     *     <li>{@link #getVoiceChannelById(String)}</li>
-     *     <li>{@link #getStoreChannelById(String)}</li>
-     *     <li>{@link #getCategoryById(String)}</li>
-     * </ul>
-     *
-     * @param  id
-     *         The ID of the channel
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided ID is null
-     * @throws java.lang.NumberFormatException
-     *         If the provided ID is not a snowflake
-     *
-     * @return The GuildChannel or null
-     */
-    @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull String id)
-    {
-        return getGuildChannelById(MiscUtil.parseSnowflake(id));
-    }
-
     @Nonnull
     @Override
     SortedSnowflakeCacheView<StageChannel> getStageChannelCache();
@@ -1495,10 +1462,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @Override
     SortedSnowflakeCacheView<Category> getCategoryCache();
-
-    @Nonnull
-    @Override
-    SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache();
 
     @Nonnull
     @Override
@@ -1519,12 +1482,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel and StoreChannel without parent</li>
+     *     <li>TextChannel and NewsChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
      *     <li>StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel and StoreChannel with category as parent</li>
+     *             <li>TextChannel and NewsChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
      *             <li>StageChannel with category as parent</li>
      *         </ol>
@@ -1547,12 +1510,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel and StoreChannel without parent</li>
+     *     <li>TextChannel and NewsChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
      *     <li>StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel and StoreChannel with category as parent</li>
+     *             <li>TextChannel and NewsChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
      *             <li>StageChannel with category as parent</li>
      *         </ol>
@@ -2137,17 +2100,17 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     Role getPublicRole();
 
     /**
-     * The default {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * The default {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time when accepting an invite
-     * that is not directed at a specific {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
+     * that is not directed at a specific {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel}.
      *
      * <p>Note: This channel is the first channel in the guild (ordered by position) that the {@link #getPublicRole()}
      * has the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} representing the default channel for this guild
+     * @return The {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel} representing the default channel for this guild
      */
     @Nullable
-    TextChannel getDefaultChannel();
+    BaseGuildMessageChannel getDefaultChannel();
 
     /**
      * Returns the {@link GuildManager GuildManager} for this Guild, used to modify
@@ -2178,7 +2141,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * this Guild.
      * <br>This iterates from the most recent action to the first logged one. (Limit 90 days into history by discord api)
      *
-     * <h1>Examples</h1>
+     * <h4>Examples</h4>
      * <pre>{@code
      * public void logBan(GuildBanEvent event) {
      *     Guild guild = event.getGuild();
@@ -3229,6 +3192,76 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     RestAction<List<ThreadChannel>> retrieveActiveThreads();
 
+
+    /**
+     * Retrieves a {@link GuildScheduledEvent} by its ID.
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKOWN_GUILD_SCHEDULED_EVENT}
+     *     <br>A scheduled event with the specified ID does not exist in the guild, or the currently logged in user does not
+     *     have access to it.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the {@link GuildScheduledEvent}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
+     *
+     * @see #getScheduledEventById(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id);
+
+    /**
+     * Retrieves a {@link GuildScheduledEvent} by its ID.
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKOWN_GUILD_SCHEDULED_EVENT}
+     *     <br>A scheduled event with the specified ID does not exist in this guild, or the currently logged in user does not
+     *     have access to it.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the {@link GuildScheduledEvent}
+     *
+     * @throws IllegalArgumentException
+     *         If the specified ID is {@code null} or empty
+     *
+     * @throws NumberFormatException
+     *         If the specified ID cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
+     *
+     * @see #getScheduledEventById(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<GuildScheduledEvent> retrieveScheduledEventById(String id);
+
+    /**
+     * Retrieves a {@link GuildScheduledEvent} by its ID.
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKOWN_GUILD_SCHEDULED_EVENT}
+     *     <br>A scheduled event with the specified ID does not exist in this guild, or the currently logged in user does not
+     *     have access to it.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the {@link GuildScheduledEvent}
+     *
+     * @throws IllegalArgumentException
+     *         If the specified ID is {@code null} or empty
+     *
+     * @throws NumberFormatException
+     *         If the specified ID cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
+     *
+     * @see #getScheduledEventById(long)
+     */
+
     /* From GuildController */
 
     /**
@@ -3447,55 +3480,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles);
-
-
-    /**
-     * Retrieves a {@link GuildScheduledEvent} by its ID.
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKOWN_GUILD_SCHEDULED_EVENT}
-     *     <br>A scheduled event with the specified ID does not exist in the guild, or the currently logged in user does not
-     *     have access to it.</li>
-     * </ul>
-     *
-     * @param  id
-     *         The ID of the {@link GuildScheduledEvent}
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
-     *
-     * @see #getScheduledEventById(long)
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id);
-
-    /**
-     * Retrieves a {@link GuildScheduledEvent} by its ID.
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKOWN_GUILD_SCHEDULED_EVENT}
-     *     <br>A scheduled event with the specified ID does not exist in this guild, or the currently logged in user does not
-     *     have access to it.</li>
-     * </ul>
-     *
-     * @param  id
-     *         The ID of the {@link GuildScheduledEvent}
-     *
-     * @throws IllegalArgumentException
-     *         If the specified ID is {@code null} or empty
-     *
-     * @throws NumberFormatException
-     *         If the specified ID cannot be parsed by {@link Long#parseLong(String)}
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
-     *
-     * @see #getScheduledEventById(long)
-     */
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<GuildScheduledEvent> retrieveScheduledEventById(@Nonnull String id) {
-        return retrieveScheduledEventById(MiscUtil.parseSnowflake(id));
-    }
 
     /**
      * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -3792,9 +3776,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
         Checks.notNull(member, "Member");
         //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
 
-
-    /* From GuildController */
-    
         return ban(member.getUser(), delDays, reason);
     }
 
@@ -4842,7 +4823,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>None of the provided roles may be the <u>Public Role</u> of the current Guild.
      * <br>If a role is both in {@code rolesToAdd} and {@code rolesToRemove} it will be removed.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public static void promote(Member member) {
      *     Guild guild = member.getGuild();
@@ -4853,7 +4834,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * }
      * }</pre>
      *
-     * <h1>Warning</h1>
+     * <h4>Warning</h4>
      * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
      * within one event listener cycle! The changes made by this require cache updates which are triggered by
      * lifecycle events which are received later. This may only be called again once the specific Member has been updated
@@ -4910,7 +4891,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Modifies the complete {@link net.dv8tion.jda.api.entities.Role Role} set of the specified {@link net.dv8tion.jda.api.entities.Member Member}
      * <br>The provided roles will replace all current Roles of the specified Member.
      *
-     * <h1>Warning</h1>
+     * <h4>Warning</h4>
      * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
      * within one event listener cycle! The changes made by this require cache updates which are triggered by
      * lifecycle events which are received later. This may only be called again once the specific Member has been updated
@@ -4928,7 +4909,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The target Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public static void removeRoles(Member member) {
      *     Guild guild = member.getGuild();
@@ -4972,7 +4953,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * <p><u>The new roles <b>must not</b> contain the Public Role of the Guild</u>
      *
-     * <h1>Warning</h1>
+     * <h4>Warning</h4>
      * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
      * within one event listener cycle! The changes made by this require cache updates which are triggered by
      * lifecycle events which are received later. This may only be called again once the specific Member has been updated
@@ -4988,7 +4969,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The target Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public static void makeModerator(Member member) {
      *     Guild guild = member.getGuild();
@@ -5494,6 +5475,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles);
 
+
     /**
      * Creates a new {@link GuildScheduledEvent}.
      *
@@ -5530,6 +5512,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         also be specified.
      *     </li>
      * </ol>
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If a required parameter is not set.
+     *
      *
      * <h2>Example</h2>
      * <pre>{@code

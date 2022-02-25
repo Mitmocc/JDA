@@ -15,10 +15,7 @@
  */
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
-import net.dv8tion.jda.api.entities.StageChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.*;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -36,9 +33,9 @@ import java.time.OffsetDateTime;
  *     .setDescription("Come and eat some pizza and watch a movie in vc! _Make sure to bring popcorn_")
  *     .setVoiceChannel(voiceChannel);
  *     .queue();
- * manager.reset(GuildScheduledEventManager.NAME | GuildScheduledEventManager.DESCRIPTION)
- *     .setStartTime(OffsetDateTime.of(LocalDate.of(2025, 12, 31), LocalTime.of(15, 45), ZoneOffset.ofHours(7)))
+ * manager.setStartTime(OffsetDateTime.of(LocalDate.of(2025, 12, 31), LocalTime.of(15, 45), ZoneOffset.ofHours(7)))
  *     .setName("Discussing Turtle Shells")
+ *     .setDescription("")
  *     .queue();
  * }</pre>
  *
@@ -47,7 +44,7 @@ import java.time.OffsetDateTime;
 public interface GuildScheduledEventManager extends Manager<GuildScheduledEventManager>
 {
     /** Used to reset the name field */
-    long NAME         = 1 << 0;
+    long NAME         = 1;
     /** Used to reset the description field */
     long DESCRIPTION  = 1 << 1;
     /** Used to reset the location field */
@@ -56,6 +53,10 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     long START_TIME   = 1 << 3;
     /** Used to reset the end time field */
     long END_TIME     = 1 << 4;
+    /** Used to reset the image field */
+    long IMAGE        = 1 << 5;
+    /** Used to reset the status field */
+    long STATUS        = 1 << 6;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -69,6 +70,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *     <li>{@link #LOCATION}</li>
      *     <li>{@link #START_TIME}</li>
      *     <li>{@link #END_TIME}</li>
+     *     <li>{@link #IMAGE}</li>
+     *     <li>{@link #STATUS}</li>
      * </ul>
      *
      * @param  fields
@@ -92,6 +95,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *     <li>{@link #LOCATION}</li>
      *     <li>{@link #START_TIME}</li>
      *     <li>{@link #END_TIME}</li>
+     *     <li>{@link #IMAGE}</li>
+     *     <li>{@link #STATUS}</li>
      * </ul>
      *
      * @param  fields
@@ -154,6 +159,19 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     @Nonnull
     @CheckReturnValue
     GuildScheduledEventManager setDescription(@Nonnull String description);
+
+    /**
+     * Sets the cover image for the new {@link GuildScheduledEvent GuildScheduledEvent}.
+     *
+     * @param  icon
+     *         The cover image for the new {@link GuildScheduledEvent GuildScheduledEvent},
+     *         or {@code null} for no cover image.
+     *
+     * @return The current GuildScheduledEventAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildScheduledEventManager setImage(@Nonnull Icon icon);
 
     /**
      * Sets the location of the selected {@link GuildScheduledEvent} to take place in a specified stage channel.

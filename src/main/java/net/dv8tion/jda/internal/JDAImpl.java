@@ -97,7 +97,6 @@ public class JDAImpl implements JDA
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
     protected final SnowflakeCacheViewImpl<Category> categories = new SnowflakeCacheViewImpl<>(Category.class, Channel::getName);
-    protected final SnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SnowflakeCacheViewImpl<>(StoreChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName);
@@ -621,6 +620,7 @@ public class JDAImpl implements JDA
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
     }
 
+
     @Nonnull
     @Override
     public SnowflakeCacheView<GuildScheduledEvent> getGuildScheduledEventCache()
@@ -628,18 +628,12 @@ public class JDAImpl implements JDA
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getScheduledEventCache));
     }
 
+
     @Nonnull
     @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return categories;
-    }
-
-    @Nonnull
-    @Override
-    public SnowflakeCacheView<StoreChannel> getStoreChannelCache()
-    {
-        return storeChannelCache;
     }
 
     @Nonnull
@@ -1104,11 +1098,6 @@ public class JDAImpl implements JDA
     public SnowflakeCacheViewImpl<Category> getCategoriesView()
     {
         return categories;
-    }
-
-    public SnowflakeCacheViewImpl<StoreChannel> getStoreChannelsView()
-    {
-        return storeChannelCache;
     }
 
     public SnowflakeCacheViewImpl<TextChannel> getTextChannelsView()
