@@ -158,7 +158,6 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     {
         preChecks();
         DataObject object = DataObject.empty();
-        System.out.println(shouldUpdate(NAME) + " - " + NAME);
         if (shouldUpdate(NAME))
             object.put("name", name);
         if (shouldUpdate(DESCRIPTION))
