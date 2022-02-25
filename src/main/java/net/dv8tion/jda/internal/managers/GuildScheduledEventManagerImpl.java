@@ -68,7 +68,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 100, "Name");
+        Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
         this.name = name;
         set |= NAME;
         return this;
@@ -81,7 +81,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         Checks.notBlank(description, "Description");
         description = description.trim();
         Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 1000, "Description");
+        Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
         this.description = description;
         set |= DESCRIPTION;
         return this;
@@ -156,8 +156,9 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     protected RequestBody finalizeData()
     {
-        checks();
+        preChecks();
         DataObject object = DataObject.empty();
+        System.out.println(NAME);
         if (shouldUpdate(NAME))
             object.put("name", name);
         if (shouldUpdate(DESCRIPTION))
@@ -185,7 +186,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         return getRequestBody(object);
     }
 
-    void checks()
+    void preChecks()
     {
         if (shouldUpdate(LOCATION))
         {

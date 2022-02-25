@@ -253,7 +253,6 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
-    // TODO: Add a PagintationAction to retrieve users currently interested in the scheduled event
     /**
      * The amount of users who are interested in attending the event.
      * <p>This method only returns the cached count, and may not be consistent with the live count. Discord may additionally not
@@ -266,6 +265,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * @see Guild#retrieveScheduledEventById(long)
      * @see Guild#retrieveScheduledEventById(String)
      */
+    // TODO: Add a PagintationAction to retrieve users currently interested in the scheduled event
     int getInterestedUserCount();
 
     /**
