@@ -190,6 +190,7 @@ public class EntityBuilder
         final DataArray threadArray = guildJson.getArray("threads");
         final DataArray emotesArray = guildJson.getArray("emojis");
         final DataArray scheduledEventsArray = guildJson.getArray("guild_scheduled_events");
+        System.out.println(scheduledEventsArray);
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
         final Optional<DataArray> presencesArray = guildJson.optArray("presences");

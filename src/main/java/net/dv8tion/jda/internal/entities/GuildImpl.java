@@ -484,7 +484,7 @@ public class GuildImpl implements Guild
                 () -> getScheduledEventById(id),
                 () ->
                 {
-                    Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getId(), id);
+                    Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getId(), id).withQueryParams("with_user_count", "true");
                     return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createGuildScheduledEvent(this, response.getObject(), getIdLong()));
                 });
     }
