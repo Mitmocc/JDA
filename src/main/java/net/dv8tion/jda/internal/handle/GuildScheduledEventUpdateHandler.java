@@ -36,7 +36,6 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        System.out.println(content);
         long guildId = content.getUnsignedLong("guild_id", 0L);
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
