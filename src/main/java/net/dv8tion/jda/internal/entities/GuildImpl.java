@@ -126,6 +126,7 @@ public class GuildImpl implements Guild
             memberPresences = new CacheView.SimpleCacheView<>(MemberPresenceImpl.class, null);
         else
             memberPresences = null;
+
     }
 
     @Nonnull
@@ -480,13 +481,8 @@ public class GuildImpl implements Guild
     public @NotNull RestAction<GuildScheduledEvent> retrieveScheduledEventById(String id)
     {
         Checks.isSnowflake(id);
-        return new DeferredRestAction<>(getJDA(), GuildScheduledEvent.class,
-                () -> getScheduledEventById(id),
-                () ->
-                {
-                    Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getId(), id).withQueryParams("with_user_count", "true");
-                    return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createGuildScheduledEvent(this, response.getObject(), getIdLong()));
-                });
+        Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getId(), id).withQueryParams("with_user_count", "true");
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createGuildScheduledEvent(this, response.getObject(), getIdLong()));
     }
 
     @Nonnull
