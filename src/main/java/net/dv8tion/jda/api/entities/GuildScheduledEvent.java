@@ -238,9 +238,9 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * @see Guild#retrieveScheduledEventById(long)
      * @see Guild#retrieveScheduledEventById(String)
      */
-    // TODO: Add a PagintationAction to retrieve users currently interested in the scheduled event
     int getInterestedUserCount();
 
+    // TODO: Add a PagintationAction to retrieve users currently interested in the scheduled event
     /**
      * The guild that this event was created in
      *
