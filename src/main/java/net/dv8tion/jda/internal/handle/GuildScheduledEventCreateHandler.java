@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.stage.StageInstanceCreateEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.GuildScheduledEventImpl;
 
 public class GuildScheduledEventCreateHandler extends SocketHandler
 {
@@ -49,6 +50,7 @@ public class GuildScheduledEventCreateHandler extends SocketHandler
         GuildScheduledEvent event = getJDA().getEntityBuilder().createGuildScheduledEvent(guild, content, guildId);
         if (event != null)
         {
+            ((GuildScheduledEventImpl) event).setInterestedUserCount(0);
             getJDA().handleEvent(new GuildScheduledEventCreateEvent(getJDA(), responseNumber, event));
         }
         return null;

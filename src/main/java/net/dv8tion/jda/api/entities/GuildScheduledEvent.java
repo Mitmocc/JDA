@@ -17,9 +17,14 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ThreadChannelPaginationActionImpl;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -226,14 +231,18 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
+
+    @Nonnull
+    @CheckReturnValue
+    GuildScheduledEventPaginationAction retrieveGuildScheduledEventUsers();
+
     /**
      * The amount of users who are interested in attending the event.
-     * <p>This method only returns the cached count, and may not be consistent with the live count. Discord may additionally not
-     * provide an interested user count for some {@link GuildScheduledEvent} objects returned from the Guild's or JDA's
-     * cache, and this method may return -1 as a result. However, event's retrieved using {@link Guild#retrieveScheduledEventById(long)}
-     * will always contain an interested user count.
+     * <p>This method can only return accurate results if the {@link GuildScheduledEvent} was created or retrieved during the current runtime.
+     * If that is not the case, this method will return -1 (instead of an inaccurate count).
+     * You can always use {@link Guild#retrieveScheduledEventById(long)} to get an accurate count and cache it.
      *
-     * @return The amount of users who are interested in attending the event
+     * @return The amount of users who are interested in attending the event or -1 if no accurate amount can be given.
      *
      * @see Guild#retrieveScheduledEventById(long)
      * @see Guild#retrieveScheduledEventById(String)

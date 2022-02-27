@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventUserRe
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.GuildScheduledEventImpl;
 
 public class GuildScheduledEventUserRemoveHandler extends SocketHandler
 {
@@ -50,6 +51,10 @@ public class GuildScheduledEventUserRemoveHandler extends SocketHandler
         long userId = content.getUnsignedLong("user_id");
         if (event == null)
             return null;
+
+        if (event.getInterestedUserCount() != -1) {
+            ((GuildScheduledEventImpl) event).setInterestedUserCount(event.getInterestedUserCount()-1);
+        }
 
         getJDA().handleEvent(new GuildScheduledEventUserRemoveEvent(getJDA(), responseNumber, event, userId));
         return null;
