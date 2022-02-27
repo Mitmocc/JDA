@@ -35,7 +35,7 @@ public class GuildScheduledEventPaginationActionImpl extends PaginationActionImp
 
     public GuildScheduledEventPaginationActionImpl(GuildScheduledEvent event)
     {
-        super(event.getGuild().getJDA(), Route.Guilds.GET_SCHEDULED_EVENT_USERS.compile(event.getId()), 1, 100, 100);
+        super(event.getGuild().getJDA(), Route.Guilds.GET_SCHEDULED_EVENT_USERS.compile(event.getGuild().getId(), event.getId()), 1, 100, 100);
         this.event = event;
     }
 
