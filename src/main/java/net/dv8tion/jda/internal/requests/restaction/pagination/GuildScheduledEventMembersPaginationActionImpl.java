@@ -55,6 +55,7 @@ public class GuildScheduledEventMembersPaginationActionImpl extends PaginationAc
     @Override
     protected void handleSuccess(Response response, Request<List<Member>> request)
     {
+        System.out.println(response.getArray());
         DataArray array = response.getArray();
         List<Member> users = new ArrayList<>(array.length());
         EntityBuilder builder = api.getEntityBuilder();
