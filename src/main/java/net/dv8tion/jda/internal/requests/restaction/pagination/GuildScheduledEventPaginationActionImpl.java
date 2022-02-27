@@ -49,8 +49,6 @@ public class GuildScheduledEventPaginationActionImpl extends PaginationActionImp
     @Override
     protected void handleSuccess(Response response, Request<List<User>> request)
     {
-        System.out.println(response);
-        System.out.println(response.getArray());
         DataArray array = response.getArray();
         List<User> users = new ArrayList<>(array.length());
         EntityBuilder builder = api.getEntityBuilder();
@@ -58,7 +56,7 @@ public class GuildScheduledEventPaginationActionImpl extends PaginationActionImp
         {
             try
             {
-                User user = builder.createUser(array.getObject(i));
+                User user = builder.createUser(array.getObject(i).getObject("user"));
                 users.add(user);
 
             }
