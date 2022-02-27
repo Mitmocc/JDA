@@ -56,26 +56,24 @@ public class GuildScheduledEventMembersPaginationActionImpl extends PaginationAc
     @Override
     protected void handleSuccess(Response response, Request<List<Member>> request)
     {
-        System.out.println(response.getArray());
         DataArray array = response.getArray();
-        List<Member> users = new ArrayList<>(array.length());
+        List<Member> members = new ArrayList<>(array.length());
         EntityBuilder builder = api.getEntityBuilder();
         for (int i = 0; i < array.length(); i++)
         {
             try
             {
-                System.out.println(array.getObject(i).getObject("member").put("user", array.getObject(i).getObject("user")));
-                Member user = builder.createMember((GuildImpl) guild, array.getObject(i).getObject("member").put("user", array.getObject(i).getObject("user")));
-                users.add(user);
+                Member member = builder.createMember((GuildImpl) guild, array.getObject(i).getObject("member").put("user", array.getObject(i).getObject("user")));
+                members.add(member);
             }
             catch (ParsingException | NullPointerException e)
             {
                 LOG.warn("Encountered an exception in GuildScheduledEventPagination", e);
             }
         }
-        last = users.get(users.size() - 1);
+        last = members.get(members.size() - 1);
         lastKey = last.getIdLong();
-        request.onSuccess(users);
+        request.onSuccess(members);
     }
     @Override
     protected long getKey(Member it)
