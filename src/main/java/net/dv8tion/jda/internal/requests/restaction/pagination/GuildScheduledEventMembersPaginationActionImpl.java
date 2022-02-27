@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventUsersPaginationAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -63,7 +64,8 @@ public class GuildScheduledEventMembersPaginationActionImpl extends PaginationAc
         {
             try
             {
-                Member user = builder.createMember((GuildImpl) guild, array.getObject(i).getObject("member"));
+                System.out.println(array.getObject(i).getObject("member").put("user", array.getObject(i).getObject("user")));
+                Member user = builder.createMember((GuildImpl) guild, array.getObject(i).getObject("member").put("user", array.getObject(i).getObject("user")));
                 users.add(user);
             }
             catch (ParsingException | NullPointerException e)
