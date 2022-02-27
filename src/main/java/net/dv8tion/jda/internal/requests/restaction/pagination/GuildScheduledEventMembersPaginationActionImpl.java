@@ -16,49 +16,54 @@
 
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventUsersPaginationAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuildScheduledEventPaginationActionImpl extends PaginationActionImpl<User, GuildScheduledEventPaginationAction> implements GuildScheduledEventPaginationAction
+public class GuildScheduledEventMembersPaginationActionImpl extends PaginationActionImpl<Member, GuildScheduledEventMembersPaginationAction> implements GuildScheduledEventMembersPaginationAction
 {
-    private final GuildScheduledEvent event;
+    protected final Guild guild;
 
-    public GuildScheduledEventPaginationActionImpl(GuildScheduledEvent event)
+    public GuildScheduledEventMembersPaginationActionImpl(GuildScheduledEvent event)
     {
-        super(event.getGuild().getJDA(), Route.Guilds.GET_SCHEDULED_EVENT_USERS.compile(event.getGuild().getId(), event.getId()), 1, 100, 100);
-        this.event = event;
+        super(event.getGuild().getJDA(), Route.Guilds.GET_SCHEDULED_EVENT_USERS.compile(event.getGuild().getId(), event.getId()).withQueryParams("with_member", "true"), 1, 100, 100);
+        this.guild = event.getGuild();
     }
 
     @Nonnull
     @Override
     public Guild getGuild()
     {
-        return event.getGuild();
+        return guild;
     }
 
+
     @Override
-    protected void handleSuccess(Response response, Request<List<User>> request)
+    protected void handleSuccess(Response response, Request<List<Member>> request)
     {
         DataArray array = response.getArray();
-        List<User> users = new ArrayList<>(array.length());
+        List<Member> users = new ArrayList<>(array.length());
         EntityBuilder builder = api.getEntityBuilder();
         for (int i = 0; i < array.length(); i++)
         {
             try
             {
-                User user = builder.createUser(array.getObject(i).getObject("user"));
+                Member user = builder.createMember((GuildImpl) guild, array.getObject(i).getObject("member"));
                 users.add(user);
-
             }
             catch (ParsingException | NullPointerException e)
             {
@@ -70,7 +75,7 @@ public class GuildScheduledEventPaginationActionImpl extends PaginationActionImp
         request.onSuccess(users);
     }
     @Override
-    protected long getKey(User it)
+    protected long getKey(Member it)
     {
         return it.getIdLong();
     }

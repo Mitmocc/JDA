@@ -19,16 +19,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventPaginationAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
-import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventUsersPaginationAction;
 import net.dv8tion.jda.internal.managers.GuildScheduledEventManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.pagination.GuildScheduledEventPaginationActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.pagination.ThreadChannelPaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.GuildScheduledEventMembersPaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.GuildScheduledEventUsersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -197,9 +195,17 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Nonnull
     @CheckReturnValue
     @Override
-    public GuildScheduledEventPaginationAction retrieveGuildScheduledEventUsers()
+    public GuildScheduledEventUsersPaginationAction retrieveGuildScheduledEventUsers()
     {
-        return new GuildScheduledEventPaginationActionImpl(this);
+        return new GuildScheduledEventUsersPaginationActionImpl(this);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    @Override
+    public GuildScheduledEventMembersPaginationAction retrieveGuildScheduledEventMembers()
+    {
+        return new GuildScheduledEventMembersPaginationActionImpl(this);
     }
 
     public GuildScheduledEventImpl setName(String name)

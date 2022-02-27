@@ -15,16 +15,11 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventPaginationAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.pagination.ThreadChannelPaginationActionImpl;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventUsersPaginationAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -234,7 +229,11 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventPaginationAction retrieveGuildScheduledEventUsers();
+    GuildScheduledEventUsersPaginationAction retrieveGuildScheduledEventUsers();
+
+    @Nonnull
+    @CheckReturnValue
+    GuildScheduledEventMembersPaginationAction retrieveGuildScheduledEventMembers();
 
     /**
      * The amount of users who are interested in attending the event.

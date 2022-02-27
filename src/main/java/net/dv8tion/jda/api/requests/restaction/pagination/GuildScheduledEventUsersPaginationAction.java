@@ -47,11 +47,11 @@ import javax.annotation.Nonnull;
  * }
  * }</pre>
  */
-public interface GuildScheduledEventPaginationAction extends PaginationAction<User, GuildScheduledEventPaginationAction>
+public interface GuildScheduledEventUsersPaginationAction extends PaginationAction<User, GuildScheduledEventUsersPaginationAction>
 {
     /**
      * The current target {@link net.dv8tion.jda.api.entities.Guild Guild} for
-     * this AuditLogPaginationAction.
+     * this GuildScheduledEventUsersPaginationAction.
      *
      * @return The never-null target Guild
      */
