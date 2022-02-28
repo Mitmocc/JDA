@@ -104,7 +104,7 @@ public class ChannelDeleteHandler extends SocketHandler
                         getJDA(), responseNumber,
                         channel));
 
-                guild.getScheduledEventsView().stream().filter(guildScheduledEvent -> guildScheduledEvent.getVoiceChannel() != null && guildScheduledEvent.getVoiceChannel().getIdLong() == channelId).forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(channelId));
+                guild.getScheduledEventsView().stream().filter(guildScheduledEvent -> guildScheduledEvent.getVoiceChannel() != null && guildScheduledEvent.getVoiceChannel().getIdLong() == channelId).forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(guildScheduledEvent.getIdLong()));
                 break;
             }
             case STAGE:
@@ -122,7 +122,7 @@ public class ChannelDeleteHandler extends SocketHandler
                         getJDA(), responseNumber,
                         channel));
 
-                guild.getScheduledEventsView().stream().filter(guildScheduledEvent -> guildScheduledEvent.getStageChannel() != null && guildScheduledEvent.getStageChannel().getIdLong() == channelId).forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(channelId));
+                guild.getScheduledEventsView().stream().filter(guildScheduledEvent -> guildScheduledEvent.getStageChannel() != null && guildScheduledEvent.getStageChannel().getIdLong() == channelId).forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(guildScheduledEvent.getIdLong()));
                 break;
             }
 
