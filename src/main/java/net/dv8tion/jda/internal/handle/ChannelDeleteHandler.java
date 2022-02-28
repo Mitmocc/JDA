@@ -34,7 +34,6 @@ public class ChannelDeleteHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        System.out.println(content);
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 
         long guildId = 0;
@@ -104,6 +103,8 @@ public class ChannelDeleteHandler extends SocketHandler
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
+
+                guild.getScheduledEventsView().stream().filter(guildScheduledEvent -> guildScheduledEvent.getVoiceChannel() != null && guildScheduledEvent.getVoiceChannel().getIdLong() == channelId).forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(channelId));
                 break;
             }
             case STAGE:
@@ -120,6 +121,9 @@ public class ChannelDeleteHandler extends SocketHandler
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
+
+                guild.getScheduledEventsView().stream().filter(guildScheduledEvent -> guildScheduledEvent.getStageChannel() != null && guildScheduledEvent.getStageChannel().getIdLong() == channelId).forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(channelId));
+                break;
             }
 
             case CATEGORY:
