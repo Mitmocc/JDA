@@ -34,6 +34,7 @@ public class ChannelDeleteHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
+        System.out.println(content);
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 
         long guildId = 0;
