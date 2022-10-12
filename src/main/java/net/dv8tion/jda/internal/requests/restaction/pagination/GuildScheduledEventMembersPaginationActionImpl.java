@@ -40,7 +40,7 @@ public class GuildScheduledEventMembersPaginationActionImpl extends PaginationAc
 
     public GuildScheduledEventMembersPaginationActionImpl(GuildScheduledEvent event)
     {
-        super(event.getGuild().getJDA(), Route.Guilds.GET_SCHEDULED_EVENT_USERS.compile(event.getGuild().getId(), event.getId()).withQueryParams("with_member", "true"), 1, 100, 100);
+        super(event.getGuild().getJDA(), Route.Guilds.GET_SCHEDULED_EVENT_USERS.compile(event.getGuild().getId(), event.getId()).withQueryParams("with_member", "false"), 1, 100, 100);
         this.guild = event.getGuild();
     }
 
