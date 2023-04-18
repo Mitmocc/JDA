@@ -58,6 +58,11 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
     protected RequestBody finalizeData()
     {
         DataObject json = DataObject.empty();
+        if (flags == 10) {
+            json.put("type", ResponseType.PREMIUM_REQUIRED.getRaw());
+            json.put("data", DataObject.empty());
+            return getRequestBody(json);
+        }
         if (builder.isEmpty())
         {
             json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
@@ -85,6 +90,15 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
             this.flags |= flag;
         else
             this.flags &= ~flag;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public ReplyCallbackActionImpl setPremiumRequired(boolean required)
+    {
+        if (required)
+            this.flags = 10;
         return this;
     }
 
