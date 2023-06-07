@@ -43,6 +43,7 @@ public class WebhookMessageCreateActionImpl<T>
     private final Function<DataObject, T> transformer;
 
     private boolean ephemeral;
+    private boolean premiumRequired;
 
     public WebhookMessageCreateActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer)
     {
@@ -64,6 +65,14 @@ public class WebhookMessageCreateActionImpl<T>
         return this;
     }
 
+    @Nonnull
+    @Override
+    public WebhookMessageCreateActionImpl<T> setPremiumRequired(boolean premiumRequired)
+    {
+        this.premiumRequired = premiumRequired;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -71,6 +80,8 @@ public class WebhookMessageCreateActionImpl<T>
         {
             List<FileUpload> files = data.getFiles();
             DataObject json = data.toData();
+            if (premiumRequired)
+                json.put("type", 10).put("data", DataObject.empty());
             if (ephemeral)
                 json.put("flags", json.getInt("flags", 0) | MessageFlag.EPHEMERAL.getValue());
 

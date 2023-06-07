@@ -117,6 +117,9 @@ public interface InteractionHook extends WebhookClient<Message>
     @Nonnull
     InteractionHook setEphemeral(boolean ephemeral);
 
+    @Nonnull
+    InteractionHook setPremiumRequired(boolean premiumRequired);
+
     /**
      * The JDA instance for this interaction
      *

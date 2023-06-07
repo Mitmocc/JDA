@@ -52,6 +52,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     private Exception exception;
     private boolean isReady;
     private boolean ephemeral;
+    private boolean premiumRequired;
 
     public InteractionHookImpl(@Nonnull DeferrableInteractionImpl interaction, @Nonnull JDA api)
     {
@@ -126,6 +127,14 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Nonnull
     @Override
+    public InteractionHook setPremiumRequired(boolean premiumRequired)
+    {
+        this.premiumRequired = premiumRequired;
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public JDA getJDA()
     {
         return api;
@@ -149,7 +158,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken());
         route = route.withQueryParams("wait", "true");
         Function<DataObject, Message> transform = (json) -> createMessage((JDAImpl) api, json);
-        WebhookMessageCreateActionImpl<Message> action = new WebhookMessageCreateActionImpl<>(getJDA(), route, transform).setEphemeral(ephemeral);
+        WebhookMessageCreateActionImpl<Message> action = new WebhookMessageCreateActionImpl<>(getJDA(), route, transform).setEphemeral(ephemeral).setPremiumRequired(premiumRequired);
         action.setCheck(this::checkExpired);
         return onReady(action);
     }
