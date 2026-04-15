@@ -337,6 +337,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 .orElse(null);
         DataArray roleArray = guildJson.getArray("roles");
         DataArray channelArray = guildJson.getArray("channels");
+        System.out.println(channelArray);
         DataArray threadArray = guildJson.getArray("threads");
         DataArray scheduledEventsArray = guildJson.getArray("guild_scheduled_events");
         DataArray emojisArray = guildJson.getArray("emojis");
